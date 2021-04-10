@@ -1,0 +1,74 @@
+import React, { useRef, useState } from "react";
+import { useDrag, useDrop } from "react-dnd";
+import { CARD_TYPE } from "../../consts";
+import { CardItem, DragableCardItem } from "../../types";
+import { TaskModal } from "../TaskModal/TaskModal";
+
+type Props = {
+  item: CardItem;
+  index: number;
+  changeOrderOfItems: (dragIndex: number, hoverIndex: number) => void;
+};
+
+export const Card: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [, drop] = useDrop({
+    accept: CARD_TYPE,
+    hover(item: DragableCardItem, monitor) {
+      if (!ref.current) {
+        return;
+      }
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      const hoveredRect = ref.current.getBoundingClientRect();
+      const hoverMiddleY = (hoveredRect.bottom - hoveredRect.top) / 2;
+      const mousePosition = monitor.getClientOffset();
+      const hoverClientY = mousePosition!.y - hoveredRect.top;
+
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        return;
+      }
+
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
+      }
+      changeOrderOfItems(dragIndex, hoverIndex);
+      item.index = hoverIndex;
+    },
+  });
+
+  const [{ isDragging }, drag] = useDrag({
+    item: { ...item, index },
+    type: CARD_TYPE,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  const [show, setShow] = useState(false);
+  const onOpen = () => setShow(true);
+  const onClose = () => setShow(false);
+
+  const attachRef = () => {
+    drag(ref);
+    drop(ref);
+  };
+
+  attachRef();
+
+  return (
+    <React.Fragment>
+      <div ref={ref} style={{ opacity: isDragging ? 0 : 1 }} onClick={onOpen}>
+        <h3>{item.title}</h3>
+        <p>{item.description}</p>
+      </div>
+      <TaskModal item={item} onClose={onClose} show={show} />
+    </React.Fragment>
+  );
+};
