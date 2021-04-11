@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { CARD_TYPE } from "../../consts";
+import { CARD_TYPE, statuses } from "../../consts";
 import { CardItem, DragableCardItem } from "../../types";
 import { TaskModal } from "../TaskModal/TaskModal";
+import styles from "./styles.module.css";
 
 type Props = {
   item: CardItem;
@@ -12,6 +13,8 @@ type Props = {
 
 export const Card: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const statusColor =
+    statuses.find((s) => s.status === item.status)?.color || "blue";
 
   const [, drop] = useDrop({
     accept: CARD_TYPE,
@@ -63,12 +66,20 @@ export const Card: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
   attachRef();
 
   return (
-    <React.Fragment>
-      <div ref={ref} style={{ opacity: isDragging ? 0 : 1 }} onClick={onOpen}>
-        <h3>{item.title}</h3>
+    <>
+      <div
+        ref={ref}
+        style={{
+          opacity: isDragging ? 0 : 1,
+          borderLeft: `3px solid ${statusColor}`,
+        }}
+        className={styles.card}
+        onClick={onOpen}
+      >
+        <p>{item.title}</p>
         <p>{item.description}</p>
       </div>
       <TaskModal item={item} onClose={onClose} show={show} />
-    </React.Fragment>
+    </>
   );
 };

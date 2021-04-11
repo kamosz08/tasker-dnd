@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Card } from "../../components/Card/Card";
 import { DropFunction, Swimlane } from "../../components/Swimlane/Swimlane";
 import { DUMMY_DATA, statuses } from "../../consts";
+import styles from "./styles.module.css";
 
 export const Main: React.FC = () => {
   const [items, setItems] = useState(DUMMY_DATA);
@@ -25,34 +26,29 @@ export const Main: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-evenly",
-      }}
-    >
-      {statuses.map((s) => {
-        return (
-          <div
-            key={s.status}
-            style={{ backgroundColor: "azure", marginLeft: 8, marginRight: 8 }}
-          >
-            <h2>{s.status.toUpperCase()}</h2>
-            <Swimlane onDrop={onDrop} status={s.status}>
-              {items
-                .filter((i) => i.status === s.status)
-                .map((i, idx) => (
-                  <Card
-                    key={i.id}
-                    item={i}
-                    index={idx}
-                    changeOrderOfItems={changeOrderOfItems}
-                  />
-                ))}
-            </Swimlane>
-          </div>
-        );
-      })}
-    </div>
+    <>
+      <h3 className={styles["header"]}>Board name</h3>
+      <div className={styles["main-wrapper"]}>
+        {statuses.map((s) => {
+          return (
+            <div key={s.status} className={styles.column}>
+              <p className={styles["column-header"]}>{s.status}</p>
+              <Swimlane onDrop={onDrop} status={s.status}>
+                {items
+                  .filter((i) => i.status === s.status)
+                  .map((i, idx) => (
+                    <Card
+                      key={i.id}
+                      item={i}
+                      index={idx}
+                      changeOrderOfItems={changeOrderOfItems}
+                    />
+                  ))}
+              </Swimlane>
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 };

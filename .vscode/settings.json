@@ -1,3 +1,4 @@
 {
-  "typescript.tsdk": "/home/kamosz08/Documents/React/tasker-dnd/node_modules/typescript/lib"
+  "typescript.tsdk": "/home/kamosz08/Documents/React/tasker-dnd/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

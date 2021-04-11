@@ -31,19 +31,19 @@ export const DUMMY_DATA: CardItem[] = [
 
 export const statuses = [
   {
-    status: "open",
+    status: "to do",
     color: "#EB5A46",
   },
   {
-    status: "in progress",
+    status: "open",
     color: "#00C2E0",
   },
   {
-    status: "in review",
-    color: "#C377E0",
+    status: "in progress",
+    color: "#efd93b",
   },
   {
     status: "done",
-    color: "#3981DE",
+    color: "#74b132",
   },
 ];

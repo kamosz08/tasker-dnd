@@ -1,0 +1,28 @@
+.main-wrapper {
+  display: flex;
+  justify-content: center;
+  max-width: 960px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.column {
+  background-color: #F0F0F0;
+  flex: 1;
+  border-right: 1px solid rgba(0, 0, 0, .2);
+}
+
+.column:last-of-type {
+  border-right: none;
+}
+
+.header {
+  text-align: center;
+}
+
+.column-header {
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 0, 0, .2);
+  padding-bottom: 12px;
+  margin-bottom: 0;
+}
