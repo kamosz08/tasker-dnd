@@ -74,7 +74,7 @@ export const Card: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
           borderLeft: `3px solid ${statusColor}`,
         }}
         className={styles.card}
-        onClick={onOpen}
+        onDoubleClick={onOpen}
       >
         <p>{item.title}</p>
         <p>{item.description}</p>
