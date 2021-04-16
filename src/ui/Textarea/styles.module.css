@@ -1,0 +1,8 @@
+.textarea {
+  border: 1px solid #b9d1e4;
+  resize: none;
+  padding: 4px 8px;
+}
+.textarea:focus {
+  outline: 1.5px solid #b9d1e4;
+}

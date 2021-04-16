@@ -5,6 +5,7 @@
 
 .main {
   flex: 3;
+  padding-right: 16px;
 }
 
 .right-sidebar {
@@ -50,4 +51,14 @@
 
 .title {
   font-size: 1.2rem;
+}
+
+.add-comment {
+  width: 90%;
+  margin-right: 16px;
+  margin-top: 16px;
+}
+
+.add-comment-button {
+  margin-top: 8px;
 }

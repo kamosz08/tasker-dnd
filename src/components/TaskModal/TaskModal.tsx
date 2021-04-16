@@ -1,6 +1,8 @@
 import React from "react";
 import Modal from "react-modal";
 import { CardItem } from "../../types";
+import { Button } from "../../ui/Button/Button";
+import { Textarea } from "../../ui/Textarea/Textarea";
 import styles from "./styles.module.css";
 
 type Props = {
@@ -10,16 +12,21 @@ type Props = {
 };
 
 Modal.setAppElement("#root");
+
 const customStyles = {
   content: {
     width: 960,
-    height: 700,
+    height: "min-content",
+    minHeight: 400,
+    maxHeight: 700,
+    margin: "auto",
+    top: 0,
     left: 0,
+    bottom: 0,
     right: 0,
-    marginLeft: "auto",
-    marginRight: "auto",
   },
 };
+
 export const TaskModal: React.FC<Props> = ({ show, onClose, item }) => {
   return (
     <Modal isOpen={show} onRequestClose={onClose} style={customStyles}>
@@ -46,6 +53,15 @@ export const TaskModal: React.FC<Props> = ({ show, onClose, item }) => {
           </div>
           <p className={styles.title}>{item.title}</p>
           <p className="description">{item.description}</p>
+          <Textarea
+            name="addComment"
+            placeholder="Write a comment"
+            rows={4}
+            className={styles["add-comment"]}
+          />
+          <Button className={styles["add-comment-button"]}>Add comment</Button>
+          <p className="tabs">Tabs - style me</p>
+          <div className="comment-list">Comment list </div>
         </section>
         <section className={styles["right-sidebar"]}>
           <div className={styles["info-card"]}>
