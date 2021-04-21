@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Card } from "../../components/Card/Card";
-import { DropFunction, Swimlane } from "../../components/Swimlane/Swimlane";
+import { Task } from "./components/Task/Task";
+import { DropFunction, Swimlane } from "./components/Swimlane/Swimlane";
 import { DUMMY_DATA, statuses } from "../../consts";
 import styles from "./styles.module.css";
 
@@ -37,7 +37,7 @@ export const Main: React.FC = () => {
                 {items
                   .filter((i) => i.status === s.status)
                   .map((i, idx) => (
-                    <Card
+                    <Task
                       key={i.id}
                       item={i}
                       index={idx}

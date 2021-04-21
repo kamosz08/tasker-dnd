@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { CARD_TYPE, statuses } from "../../consts";
-import { CardItem, DragableCardItem } from "../../types";
+import { CARD_TYPE, statuses } from "../../../../consts";
+import { CardItem, DragableCardItem } from "../../../../types";
 import { TaskModal } from "../TaskModal/TaskModal";
 import styles from "./styles.module.css";
 
@@ -11,7 +11,7 @@ type Props = {
   changeOrderOfItems: (dragIndex: number, hoverIndex: number) => void;
 };
 
-export const Card: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
+export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
   const ref = useRef<HTMLDivElement>(null);
   const statusColor =
     statuses.find((s) => s.status === item.status)?.color || "blue";

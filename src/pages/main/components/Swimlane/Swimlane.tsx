@@ -1,7 +1,7 @@
 import React from "react";
 import { DropTargetMonitor, useDrop } from "react-dnd";
-import { CARD_TYPE } from "../../consts";
-import { DragableCardItem } from "../../types";
+import { CARD_TYPE } from "../../../../consts";
+import { DragableCardItem } from "../../../../types";
 
 export type DropFunction = (
   item: DragableCardItem,

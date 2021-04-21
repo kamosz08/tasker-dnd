@@ -1,8 +1,8 @@
 import React from "react";
 import Modal from "react-modal";
-import { CardItem } from "../../types";
-import { Button } from "../../ui/Button/Button";
-import { Textarea } from "../../ui/Textarea/Textarea";
+import { CardItem } from "../../../../types";
+import { Button } from "../../../../ui/Button/Button";
+import { Textarea } from "../../../../ui/Textarea/Textarea";
 import styles from "./styles.module.css";
 
 type Props = {
