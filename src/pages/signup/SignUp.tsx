@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./styles.module.css";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import { useAuth } from "../../contexts/AuthContext";
+import { Link, useHistory } from "react-router-dom";
 
 type FormValues = {
   email: string;
@@ -14,6 +15,7 @@ type Errors = Partial<FormValues & { differenceInPassword: string }>;
 export const SignUp: React.FC = () => {
   const { signUp } = useAuth();
   const [error, setError] = useState("");
+  const { push } = useHistory();
 
   const validate = (values: FormValues) => {
     setError("");
@@ -43,6 +45,7 @@ export const SignUp: React.FC = () => {
     }
     try {
       await signUp(values.email, values.password);
+      push("/");
     } catch (error) {
       if (typeof error.message === "string") {
         setError(error.message);
@@ -61,7 +64,7 @@ export const SignUp: React.FC = () => {
         validate={validate}
         onSubmit={onSubmit}
       >
-        {({ isSubmitting, errors }) => (
+        {({ isSubmitting }) => (
           <Form>
             <Field type="email" name="email" />
             <ErrorMessage name="email" component="div" />
@@ -71,11 +74,14 @@ export const SignUp: React.FC = () => {
             <ErrorMessage name="passwordConfirm" component="div" />
             {!!error && <div>{error}</div>}
             <button type="submit" disabled={isSubmitting}>
-              Submit
+              Sign Up
             </button>
           </Form>
         )}
       </Formik>
+      <p>
+        Already have an account? <Link to="/login">Log In</Link>
+      </p>
     </>
   );
 };

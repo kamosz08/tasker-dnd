@@ -8,6 +8,12 @@ type Context = {
     email: string,
     password: string
   ) => Promise<firebase.auth.UserCredential>;
+  logIn: (
+    email: string,
+    password: string
+  ) => Promise<firebase.auth.UserCredential>;
+  logout: () => void;
+  resetPassword: (email: string) => Promise<void>;
 };
 
 const AuthContext = React.createContext<Context | undefined>(undefined);
@@ -28,9 +34,24 @@ export const AuthProvider: React.FC = ({ children }) => {
     return auth.createUserWithEmailAndPassword(email, password);
   };
 
+  const logIn = (email: string, password: string) => {
+    return auth.signInWithEmailAndPassword(email, password);
+  };
+
+  const logout = () => {
+    return auth.signOut();
+  };
+
+  const resetPassword = (email: string) => {
+    return auth.sendPasswordResetEmail(email);
+  };
+
   const contextValue = {
     user: currentUser,
     signUp,
+    logIn,
+    logout,
+    resetPassword,
   };
 
   return (

@@ -3,8 +3,10 @@ import { Task } from "./components/Task/Task";
 import { DropFunction, Swimlane } from "./components/Swimlane/Swimlane";
 import { DUMMY_DATA, statuses } from "../../consts";
 import styles from "./styles.module.css";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
-export const Main: React.FC = () => {
+export const Board: React.FC = () => {
   const [items, setItems] = useState(DUMMY_DATA);
 
   const onDrop: DropFunction = (item, monitor, status) => {
@@ -26,7 +28,7 @@ export const Main: React.FC = () => {
   };
 
   return (
-    <>
+    <DndProvider backend={HTML5Backend}>
       <h3 className={styles["header"]}>Board name</h3>
       <div className={styles["main-wrapper"]}>
         {statuses.map((s) => {
@@ -49,6 +51,6 @@ export const Main: React.FC = () => {
           );
         })}
       </div>
-    </>
+    </DndProvider>
   );
 };
