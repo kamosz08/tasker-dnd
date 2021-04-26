@@ -1,11 +1,25 @@
 .button {
-  border: 1px solid #b9d1e4;
   font-size: 14px;
   padding: 4px 16px;
-  background: none;
   cursor: pointer;
   border-radius: 3px;
 }
-.button:focus {
+
+.primary {
+  background: #448ce8;
+  border: 1px solid #448ce8;
+  color: white;
+  font-size: 16px;
+  padding: 8px 16px;
+}
+.primary:focus {
+  outline: 1.5px solid #448ce8;
+}
+
+.outlined {
+  border: 1px solid #b9d1e4;
+  background: none;
+}
+.outlined:focus {
   outline: 1.5px solid #b9d1e4;
 }

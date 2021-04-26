@@ -4,11 +4,19 @@ import styles from "./styles.module.css";
 type Props = React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
-> & { children: React.ReactNode };
+> & { children: React.ReactNode; buttonType: "primary" | "outlined" };
 
-export const Button: React.FC<Props> = ({ children, className, ...props }) => {
+export const Button: React.FC<Props> = ({
+  children,
+  className,
+  buttonType,
+  ...props
+}) => {
   return (
-    <button className={`${styles.button} ${className}`} {...props}>
+    <button
+      className={`${styles.button} ${styles[buttonType]} ${className}`}
+      {...props}
+    >
       {children}
     </button>
   );

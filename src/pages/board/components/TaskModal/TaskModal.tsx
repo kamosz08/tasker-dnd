@@ -59,7 +59,12 @@ export const TaskModal: React.FC<Props> = ({ show, onClose, item }) => {
             rows={4}
             className={styles["add-comment"]}
           />
-          <Button className={styles["add-comment-button"]}>Add comment</Button>
+          <Button
+            className={styles["add-comment-button"]}
+            buttonType="outlined"
+          >
+            Add comment
+          </Button>
           <p className="tabs">Tabs - style me</p>
           <div className="comment-list">Comment list </div>
         </section>
