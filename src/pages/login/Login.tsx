@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import styles from "./styles.module.css";
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import {
+  Formik,
+  Form,
+  Field,
+  ErrorMessage,
+  FormikHelpers,
+  useFormikContext,
+} from "formik";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link, useHistory } from "react-router-dom";
 import { Box } from "../../ui/Box/Box";
@@ -12,6 +19,37 @@ type FormValues = {
 };
 
 type Errors = Partial<FormValues>;
+
+const LoginForm: React.FC = () => {
+  const { isSubmitting } = useFormikContext<FormValues>();
+
+  return (
+    <Form>
+      <Field
+        type="email"
+        name="email"
+        placeholder="Email"
+        className={styles.input}
+      />
+      <ErrorMessage name="email" component="div" className={styles.error} />
+      <Field
+        type="password"
+        name="password"
+        placeholder="Password"
+        className={styles.input}
+      />
+      <ErrorMessage name="password" component="div" className={styles.error} />
+      <Button
+        type="submit"
+        buttonType="primary"
+        disabled={isSubmitting}
+        className={styles.button}
+      >
+        Log In
+      </Button>
+    </Form>
+  );
+};
 
 export const Login: React.FC = () => {
   const { logIn } = useAuth();
@@ -29,7 +67,6 @@ export const Login: React.FC = () => {
     } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
       errors.email = "Invalid email address";
     }
-    console.log(errors);
 
     return errors;
   };
@@ -68,40 +105,7 @@ export const Login: React.FC = () => {
           validate={validate}
           onSubmit={onSubmit}
         >
-          {({ isSubmitting }) => (
-            <Form>
-              <Field
-                type="email"
-                name="email"
-                placeholder="Email"
-                className={styles.input}
-              />
-              <ErrorMessage
-                name="email"
-                component="div"
-                className={styles.error}
-              />
-              <Field
-                type="password"
-                name="password"
-                placeholder="Password"
-                className={styles.input}
-              />
-              <ErrorMessage
-                name="password"
-                component="div"
-                className={styles.error}
-              />
-              <Button
-                type="submit"
-                buttonType="primary"
-                disabled={isSubmitting}
-                className={styles.button}
-              >
-                Log In
-              </Button>
-            </Form>
-          )}
+          <LoginForm />
         </Formik>
         <p className={styles["text-center"]}>
           Forgot password?{" "}

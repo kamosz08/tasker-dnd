@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
+import styles from "./styles.module.css";
+import { Box } from "../../ui/Box/Box";
+import { Button } from "../../ui/Button/Button";
 
 type FormValues = {
   email: string;
@@ -44,28 +47,47 @@ export const ResetPassword: React.FC = () => {
   };
 
   return (
-    <>
-      <h3>Sign Up</h3>
-      <Formik
-        initialValues={{ email: "" }}
-        validate={validate}
-        onSubmit={onSubmit}
-      >
-        {({ isSubmitting }) => (
-          <Form>
-            <Field type="email" name="email" />
-            <ErrorMessage name="email" component="div" />
-            {!!error && <div>{error}</div>}
-            {!!message && <div>{message}</div>}
-            <button type="submit" disabled={isSubmitting}>
-              Reset Password
-            </button>
-          </Form>
-        )}
-      </Formik>
-      <p>
-        <Link to="/login">Back to Log In</Link>
-      </p>
-    </>
+    <Box
+      width="100%"
+      height="80%"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <div className={styles.card}>
+        <h2 className={styles.title}>Sign Up</h2>
+        {!!error && <div className={styles["server-error"]}>{error}</div>}
+        {!!message && <div className={styles["server-error"]}>{message}</div>}
+        <Formik
+          initialValues={{ email: "" }}
+          validate={validate}
+          onSubmit={onSubmit}
+        >
+          {({ isSubmitting }) => (
+            <Form>
+              <Field type="email" name="email" className={styles.input} />
+              <ErrorMessage
+                name="email"
+                component="div"
+                className={styles.error}
+              />
+              <Button
+                className={styles.button}
+                buttonType="primary"
+                type="submit"
+                disabled={isSubmitting}
+              >
+                Reset Password
+              </Button>
+            </Form>
+          )}
+        </Formik>
+        <p className={styles["text-center"]}>
+          <Link className={styles["link"]} to="/login">
+            Back to Log In
+          </Link>
+        </p>
+      </div>
+    </Box>
   );
 };

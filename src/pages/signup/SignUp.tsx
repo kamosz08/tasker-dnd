@@ -1,8 +1,17 @@
 import React, { useState } from "react";
 import styles from "./styles.module.css";
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import {
+  Formik,
+  Form,
+  Field,
+  ErrorMessage,
+  FormikHelpers,
+  useFormikContext,
+} from "formik";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link, useHistory } from "react-router-dom";
+import { Box } from "../../ui/Box/Box";
+import { Button } from "../../ui/Button/Button";
 
 type FormValues = {
   email: string;
@@ -11,6 +20,33 @@ type FormValues = {
 };
 
 type Errors = Partial<FormValues & { differenceInPassword: string }>;
+
+const SignupForm: React.FC = () => {
+  const { isSubmitting } = useFormikContext<FormValues>();
+
+  return (
+    <Form>
+      <Field type="email" name="email" className={styles.input} />
+      <ErrorMessage name="email" component="div" className={styles.error} />
+      <Field type="password" name="password" className={styles.input} />
+      <ErrorMessage name="password" component="div" className={styles.error} />
+      <Field type="password" name="passwordConfirm" className={styles.input} />
+      <ErrorMessage
+        name="passwordConfirm"
+        component="div"
+        className={styles.error}
+      />
+      <Button
+        className={styles.button}
+        buttonType="primary"
+        type="submit"
+        disabled={isSubmitting}
+      >
+        Sign Up
+      </Button>
+    </Form>
+  );
+};
 
 export const SignUp: React.FC = () => {
   const { signUp } = useAuth();
@@ -57,31 +93,30 @@ export const SignUp: React.FC = () => {
   };
 
   return (
-    <>
-      <h3>Sign Up</h3>
-      <Formik
-        initialValues={{ email: "", password: "", passwordConfirm: "" }}
-        validate={validate}
-        onSubmit={onSubmit}
-      >
-        {({ isSubmitting }) => (
-          <Form>
-            <Field type="email" name="email" />
-            <ErrorMessage name="email" component="div" />
-            <Field type="password" name="password" />
-            <ErrorMessage name="password" component="div" />
-            <Field type="password" name="passwordConfirm" />
-            <ErrorMessage name="passwordConfirm" component="div" />
-            {!!error && <div>{error}</div>}
-            <button type="submit" disabled={isSubmitting}>
-              Sign Up
-            </button>
-          </Form>
-        )}
-      </Formik>
-      <p>
-        Already have an account? <Link to="/login">Log In</Link>
-      </p>
-    </>
+    <Box
+      width="100%"
+      height="80%"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <div className={styles.card}>
+        <h2 className={styles.title}>Sign Up</h2>
+        {!!error && <div className={styles["server-error"]}>{error}</div>}
+        <Formik
+          initialValues={{ email: "", password: "", passwordConfirm: "" }}
+          validate={validate}
+          onSubmit={onSubmit}
+        >
+          <SignupForm />
+        </Formik>
+        <p className={styles["text-center"]}>
+          Already have an account?{" "}
+          <Link to="/login" className={styles["link"]}>
+            Log In
+          </Link>
+        </p>
+      </div>
+    </Box>
   );
 };
