@@ -5,9 +5,10 @@ import { useAuth } from "../../contexts/AuthContext";
 type Props = ComponentProps<typeof Route>;
 
 export const AuthenticatedRoute: React.FC<Props> = (props) => {
-  const { user } = useAuth();
+  const { user, loaded } = useAuth();
 
-  if (!user) {
+  if (!loaded) return <>Loading...</>;
+  if (loaded && !user) {
     return <Redirect to="/login" />;
   }
 

@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import styles from "./styles.module.css";
 import logo from "./logo_text.png";
 import { Button } from "../../ui/Button/Button";
+import { Box } from "../../ui/Box/Box";
 
 const PATHS_WITHOUT_NAVBAR = ["/signup", "/login", "/reset-password"];
 
@@ -38,9 +39,14 @@ export const Navbar: React.FC = () => {
         {!!error && <p>{error}</p>}
         <img src={logo} className={styles.logo} alt="Tasker DND" />
         {!!user && (
-          <Button buttonType="outlined" onClick={handleLogout}>
-            Log out
-          </Button>
+          <Box display="flex" alignItems="center">
+            <Box marginRight={12} fontSize={14} color="rgb(35 42 95)">
+              {user.email}
+            </Box>
+            <Button buttonType="outlined" onClick={handleLogout}>
+              Log out
+            </Button>
+          </Box>
         )}
       </div>
     </div>
