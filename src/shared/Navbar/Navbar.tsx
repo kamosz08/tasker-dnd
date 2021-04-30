@@ -37,7 +37,12 @@ export const Navbar: React.FC = () => {
     <div className={styles.wrapper}>
       <div className={styles.navbar}>
         {!!error && <p>{error}</p>}
-        <img src={logo} className={styles.logo} alt="Tasker DND" />
+        <img
+          src={logo}
+          className={styles.logo}
+          alt="Tasker DND"
+          onClick={() => push("/")}
+        />
         {!!user && (
           <Box display="flex" alignItems="center">
             <Box marginRight={12} fontSize={14} color="rgb(35 42 95)">

@@ -1,8 +1,8 @@
-import { CardItem } from "./types";
+import { TaskStatus, TaskType } from "./types";
 
 export const CARD_TYPE = "CARD";
 
-export const DUMMY_DATA: CardItem[] = [
+export const DUMMY_DATA: TaskType[] = [
   {
     id: 1,
     status: "open",
@@ -29,21 +29,21 @@ export const DUMMY_DATA: CardItem[] = [
   },
 ];
 
-export const statuses = [
+export const statuses: TaskStatus[] = [
   {
-    status: "to do",
+    name: "to do",
     color: "#EB5A46",
   },
   {
-    status: "open",
+    name: "open",
     color: "#00C2E0",
   },
   {
-    status: "in progress",
+    name: "in progress",
     color: "#efd93b",
   },
   {
-    status: "done",
+    name: "done",
     color: "#74b132",
   },
 ];

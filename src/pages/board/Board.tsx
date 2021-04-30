@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { Task } from "./components/Task/Task";
 import { DropFunction, Swimlane } from "./components/Swimlane/Swimlane";
-import { DUMMY_DATA, statuses } from "../../consts";
 import styles from "./styles.module.css";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { useBoard } from "./useBoard";
+import { useParams } from "react-router";
 
 export const Board: React.FC = () => {
-  const [items, setItems] = useState(DUMMY_DATA);
+  const { id } = useParams<{ id: string }>();
+  const { board, status } = useBoard(id);
+  const statuses = board?.statuses || [];
+  const [items, setItems] = useState(board?.tasks || []);
 
   const onDrop: DropFunction = (item, monitor, status) => {
     setItems((prevState) => {
@@ -27,17 +31,20 @@ export const Board: React.FC = () => {
     });
   };
 
+  if (status === "idle" || status === "loading") return <p>Loading...</p>;
+  if (status === "error" || !board)
+    return <p>There was an error while fetching board</p>;
   return (
     <DndProvider backend={HTML5Backend}>
-      <h3 className={styles["header"]}>Board name</h3>
+      <h3 className={styles["header"]}>{board.name}</h3>
       <div className={styles["main-wrapper"]}>
         {statuses.map((s) => {
           return (
-            <div key={s.status} className={styles.column}>
-              <p className={styles["column-header"]}>{s.status}</p>
-              <Swimlane onDrop={onDrop} status={s.status}>
+            <div key={s.name} className={styles.column}>
+              <p className={styles["column-header"]}>{s.name}</p>
+              <Swimlane onDrop={onDrop} status={s.name}>
                 {items
-                  .filter((i) => i.status === s.status)
+                  .filter((i) => i.status === s.name)
                   .map((i, idx) => (
                     <Task
                       key={i.id}

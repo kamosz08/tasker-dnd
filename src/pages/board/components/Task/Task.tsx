@@ -1,12 +1,12 @@
 import React, { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { CARD_TYPE, statuses } from "../../../../consts";
-import { CardItem, DragableCardItem } from "../../../../types";
+import { TaskType, DragableTaskType } from "../../../../types";
 import { TaskModal } from "../TaskModal/TaskModal";
 import styles from "./styles.module.css";
 
 type Props = {
-  item: CardItem;
+  item: TaskType;
   index: number;
   changeOrderOfItems: (dragIndex: number, hoverIndex: number) => void;
 };
@@ -14,11 +14,11 @@ type Props = {
 export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
   const ref = useRef<HTMLDivElement>(null);
   const statusColor =
-    statuses.find((s) => s.status === item.status)?.color || "blue";
+    statuses.find((s) => s.name === item.status)?.color || "blue";
 
   const [, drop] = useDrop({
     accept: CARD_TYPE,
-    hover(item: DragableCardItem, monitor) {
+    hover(item: DragableTaskType, monitor) {
       if (!ref.current) {
         return;
       }
