@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   CardHeader,
+  Chip,
   CircularProgress,
   Divider,
   Typography,
@@ -54,6 +55,10 @@ const BoardCard: React.FC<{ board: BoardType }> = ({ board }) => {
           quos veritatis nostrum porro accusantium. Est vel ab consequatur in
           suscipit.
         </Typography>
+      </Box>
+      <Box display="flex" justifyContent="flex-start">
+        <Chip label="17 items" variant="outlined" />
+        <Chip label="3 users" variant="outlined" />
       </Box>
       <Box display="flex" justifyContent="flex-end">
         <Button color="primary" onClick={goToBoard(board.id)}>
