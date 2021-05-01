@@ -1,20 +1,14 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router";
-import { Box } from "../../ui/Box/Box";
-import { Button } from "../../ui/Button/Button";
-import {
-  Formik,
-  Form,
-  Field,
-  ErrorMessage,
-  FormikHelpers,
-  useFormikContext,
-} from "formik";
+import { Box, Button, Typography } from "@material-ui/core";
+import { Formik, Form, Field, FormikHelpers, useFormikContext } from "formik";
 import styles from "./styles.module.css";
 import { firestoreDB } from "../../firebase";
 import { useAuth } from "../../contexts/AuthContext";
 import firebase from "firebase/app";
 import { statuses } from "../../consts";
+import { FormikInput } from "../../shared/FormikInput/FormikInput";
+import Alert from "@material-ui/lab/Alert";
 
 type FormValues = {
   name: string;
@@ -26,16 +20,18 @@ const NewBoardForm: React.FC = () => {
 
   return (
     <Form>
-      <Field name="name" placeholder="Board name" className={styles.input} />
-      <ErrorMessage name="name" component="div" className={styles.error} />
-      <Button
-        type="submit"
-        buttonType="primary"
-        disabled={isSubmitting}
-        className={styles.button}
-      >
-        Create
-      </Button>
+      <Field name="name" placeholder="Board name" component={FormikInput} />
+      <Box marginTop="16px" marginBottom="16px">
+        <Button
+          type="submit"
+          color="primary"
+          variant="contained"
+          disabled={isSubmitting}
+          className={styles.button}
+        >
+          Create
+        </Button>
+      </Box>
     </Form>
   );
 };
@@ -49,6 +45,9 @@ export const NewBoard: React.FC = () => {
     const errors: Errors = {};
     if (!values.name) {
       errors.name = "Required";
+    }
+    if (values.name.length >= 24) {
+      errors.name = "Maximum length is 24";
     }
 
     return errors;
@@ -85,8 +84,12 @@ export const NewBoard: React.FC = () => {
   return (
     <Box width="100%" display="flex" justifyContent="center">
       <Box>
-        <h2 className={styles.title}>Add new board</h2>
-        {!!error && <div className={styles["server-error"]}>{error}</div>}
+        <Box marginTop="16px" marginBottom="16px">
+          <Typography align="center" variant="h5">
+            Add new board
+          </Typography>
+        </Box>
+        {!!error && <Alert severity="error">{error}</Alert>}
         <Formik
           initialValues={{ name: "" }}
           validate={validate}

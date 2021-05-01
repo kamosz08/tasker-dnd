@@ -3,8 +3,7 @@ import { useHistory, useLocation } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 import styles from "./styles.module.css";
 import logo from "./logo_text.png";
-import { Button } from "../../ui/Button/Button";
-import { Box } from "../../ui/Box/Box";
+import { Box, Button } from "@material-ui/core";
 
 const PATHS_WITHOUT_NAVBAR = ["/signup", "/login", "/reset-password"];
 
@@ -45,10 +44,10 @@ export const Navbar: React.FC = () => {
         />
         {!!user && (
           <Box display="flex" alignItems="center">
-            <Box marginRight={12} fontSize={14} color="rgb(35 42 95)">
+            <Box marginRight="12px" fontSize={14} color="rgb(35 42 95)">
               {user.email}
             </Box>
-            <Button buttonType="outlined" onClick={handleLogout}>
+            <Button variant="outlined" color="primary" onClick={handleLogout}>
               Log out
             </Button>
           </Box>

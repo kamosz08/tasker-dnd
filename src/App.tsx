@@ -8,7 +8,6 @@ import { Navbar } from "./shared/Navbar/Navbar";
 import { AuthenticatedRoute } from "./shared/AuthenticatedRoute/AuthenticatedRoute";
 import { ResetPassword } from "./pages/reset-password/ResetPassword";
 import { Main } from "./pages/main/Main";
-import { NewBoard } from "./pages/new-board/NewBoard";
 
 const Routes: React.FC = () => {
   return (
@@ -19,7 +18,6 @@ const Routes: React.FC = () => {
         <Route path="/login" component={Login} />
         <Route path="/reset-password" component={ResetPassword} />
         <AuthenticatedRoute path="/boards/:id" component={Board} />
-        <AuthenticatedRoute path="/new-board" component={NewBoard} />
         <AuthenticatedRoute exact path="/" component={Main} />
       </Switch>
     </BrowserRouter>

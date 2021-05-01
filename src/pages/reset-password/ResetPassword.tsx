@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import { Formik, Form, Field, FormikHelpers, useFormikContext } from "formik";
 import { useAuth } from "../../contexts/AuthContext";
-import { Link } from "react-router-dom";
 import styles from "./styles.module.css";
-import { Box } from "../../ui/Box/Box";
-import { Button } from "../../ui/Button/Button";
+import { Box, Typography, Button } from "@material-ui/core";
+import Card from "@material-ui/core/Card";
+import Alert from "@material-ui/lab/Alert";
+import { FormikInput } from "../../shared/FormikInput/FormikInput";
+import { useHistory } from "react-router";
 
 type FormValues = {
   email: string;
@@ -12,10 +14,37 @@ type FormValues = {
 
 type Errors = Partial<FormValues>;
 
+const ResetPasswordForm: React.FC = () => {
+  const { isSubmitting } = useFormikContext<FormValues>();
+
+  return (
+    <Form>
+      <Field
+        type="email"
+        name="email"
+        placeholder="Email"
+        component={FormikInput}
+      />
+
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        disableElevation
+        disabled={isSubmitting}
+        className={styles.button}
+      >
+        Reset Password
+      </Button>
+    </Form>
+  );
+};
+
 export const ResetPassword: React.FC = () => {
   const { resetPassword } = useAuth();
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const { push } = useHistory();
 
   const validate = (values: FormValues) => {
     setError("");
@@ -54,40 +83,27 @@ export const ResetPassword: React.FC = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <div className={styles.card}>
-        <h2 className={styles.title}>Sign Up</h2>
-        {!!error && <div className={styles["server-error"]}>{error}</div>}
-        {!!message && <div className={styles["server-error"]}>{message}</div>}
+      <Card className={styles.card}>
+        <Box marginTop="16px" marginBottom="16px">
+          <Typography align="center" variant="h4">
+            Reset password
+          </Typography>
+        </Box>
+        {!!error && <Alert severity="error">{error}</Alert>}
+        {!!message && <Alert severity="info">{message}</Alert>}
         <Formik
           initialValues={{ email: "" }}
           validate={validate}
           onSubmit={onSubmit}
         >
-          {({ isSubmitting }) => (
-            <Form>
-              <Field type="email" name="email" className={styles.input} />
-              <ErrorMessage
-                name="email"
-                component="div"
-                className={styles.error}
-              />
-              <Button
-                className={styles.button}
-                buttonType="primary"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                Reset Password
-              </Button>
-            </Form>
-          )}
+          <ResetPasswordForm />
         </Formik>
-        <p className={styles["text-center"]}>
-          <Link className={styles["link"]} to="/login">
+        <Typography align="center">
+          <Button onClick={() => push("/login")} color="primary">
             Back to Log In
-          </Link>
-        </p>
-      </div>
+          </Button>
+        </Typography>
+      </Card>
     </Box>
   );
 };

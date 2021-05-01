@@ -2,7 +2,6 @@
   display: flex;
   width: 100%;
   justify-content: center;
-  cursor: pointer;
 }
 
 .navbar {
@@ -16,4 +15,5 @@
 
 .logo {
   height: 42px;
+  cursor: pointer;
 }

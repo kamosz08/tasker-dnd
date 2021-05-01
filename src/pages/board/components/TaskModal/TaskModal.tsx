@@ -1,8 +1,7 @@
+import { Button, TextField } from "@material-ui/core";
 import React from "react";
 import Modal from "react-modal";
 import { TaskType } from "../../../../types";
-import { Button } from "../../../../ui/Button/Button";
-import { Textarea } from "../../../../ui/Textarea/Textarea";
 import styles from "./styles.module.css";
 
 type Props = {
@@ -53,16 +52,14 @@ export const TaskModal: React.FC<Props> = ({ show, onClose, item }) => {
           </div>
           <p className={styles.title}>{item.title}</p>
           <p className="description">{item.description}</p>
-          <Textarea
+          <TextField
             name="addComment"
+            multiline
             placeholder="Write a comment"
             rows={4}
             className={styles["add-comment"]}
           />
-          <Button
-            className={styles["add-comment-button"]}
-            buttonType="outlined"
-          >
+          <Button variant="outlined" color="primary">
             Add comment
           </Button>
           <p className="tabs">Tabs - style me</p>

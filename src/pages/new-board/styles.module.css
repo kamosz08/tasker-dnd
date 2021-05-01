@@ -1,52 +1,5 @@
-.card {
-  background-color: white;
-  border-radius: 8px;
-  margin: 6px 6px;
-  box-shadow: 0 3rem 6rem rgba(0, 0, 0, .1);
-  padding: 4px 32px;
-  min-height: 340px;
-  width: 360px;
-}
-
-.input {
-  display: block;
-  width: 100%;
-  margin-top: 16px;
-  border: 1px solid #b9d1e4;
-  border-radius: 5px;
-  padding: 8px 16px;
-  font-size: 16px;
-}
-.input:focus {
-  outline: 1.5px solid #b9d1e4;
-}
 
 .button {
-  margin-top: 32px;
   margin-bottom: 16px;
   width: 100%;
-}
-
-.title {
-  text-align: center;
-}
-
-.error {
-  font-size: 14px;
-  color: red;
-  text-align: end;
-}
-
-.server-error {
-  border: 1px solid #6490c5;
-  background-color: #daeafd;
-  padding: 4px 8px;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.link {
-  color: #448ce8;
 }

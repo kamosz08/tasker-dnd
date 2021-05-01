@@ -1,15 +1,10 @@
 import { useEffect, useState } from "react";
 import { firestoreDB } from "../../firebase";
-import { DataStatus } from "../../types";
-
-type DataType = {
-  id: string;
-  name: string;
-};
+import { BoardType, DataStatus } from "../../types";
 
 export const useUserBoards = () => {
   const [status, setStatus] = useState<DataStatus>("idle");
-  const [data, setData] = useState<DataType[]>([]);
+  const [data, setData] = useState<BoardType[]>([]);
 
   useEffect(() => {
     setStatus("loading");
@@ -17,7 +12,7 @@ export const useUserBoards = () => {
       (snapshot) => {
         setStatus("success");
         if (!snapshot.empty) {
-          const snaphotData: DataType[] = [];
+          const snaphotData: BoardType[] = [];
           snapshot.forEach((doc) =>
             snaphotData.push({ id: doc.id, name: doc.data().name })
           );

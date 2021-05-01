@@ -6,6 +6,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useBoard } from "./useBoard";
 import { useParams } from "react-router";
+import { Box, CircularProgress } from "@material-ui/core";
 
 export const Board: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,7 +32,13 @@ export const Board: React.FC = () => {
     });
   };
 
-  if (status === "idle" || status === "loading") return <p>Loading...</p>;
+  if (status === "idle" || status === "loading")
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center">
+        <CircularProgress />
+        <Box marginLeft="8px">Loading...</Box>
+      </Box>
+    );
   if (status === "error" || !board)
     return <p>There was an error while fetching board</p>;
   return (

@@ -15,3 +15,8 @@ export type DragableTaskType = TaskType & {
 };
 
 export type DataStatus = "idle" | "loading" | "success" | "error";
+
+export type BoardType = {
+  id: string;
+  name: string;
+};

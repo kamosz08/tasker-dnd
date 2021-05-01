@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import styles from "./styles.module.css";
-import {
-  Formik,
-  Form,
-  Field,
-  ErrorMessage,
-  FormikHelpers,
-  useFormikContext,
-} from "formik";
+import { Formik, Form, Field, FormikHelpers, useFormikContext } from "formik";
 import { useAuth } from "../../contexts/AuthContext";
-import { Link, useHistory } from "react-router-dom";
-import { Box } from "../../ui/Box/Box";
-import { Button } from "../../ui/Button/Button";
+import { useHistory } from "react-router-dom";
+import { Box, Typography, Button } from "@material-ui/core";
+import Card from "@material-ui/core/Card";
+import Alert from "@material-ui/lab/Alert";
+import { FormikInput } from "../../shared/FormikInput/FormikInput";
 
 type FormValues = {
   email: string;
@@ -26,21 +21,31 @@ const SignupForm: React.FC = () => {
 
   return (
     <Form>
-      <Field type="email" name="email" className={styles.input} />
-      <ErrorMessage name="email" component="div" className={styles.error} />
-      <Field type="password" name="password" className={styles.input} />
-      <ErrorMessage name="password" component="div" className={styles.error} />
-      <Field type="password" name="passwordConfirm" className={styles.input} />
-      <ErrorMessage
+      <Field
+        type="email"
+        name="email"
+        placeholder="Email"
+        component={FormikInput}
+      />
+      <Field
+        type="password"
+        name="password"
+        placeholder="Password"
+        component={FormikInput}
+      />
+      <Field
+        type="password"
         name="passwordConfirm"
-        component="div"
-        className={styles.error}
+        placeholder="Confirm password"
+        component={FormikInput}
       />
       <Button
-        className={styles.button}
-        buttonType="primary"
         type="submit"
+        variant="contained"
+        color="primary"
+        disableElevation
         disabled={isSubmitting}
+        className={styles.button}
       >
         Sign Up
       </Button>
@@ -100,9 +105,13 @@ export const SignUp: React.FC = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <div className={styles.card}>
-        <h2 className={styles.title}>Sign Up</h2>
-        {!!error && <div className={styles["server-error"]}>{error}</div>}
+      <Card className={styles.card}>
+        <Box marginTop="16px" marginBottom="16px">
+          <Typography align="center" variant="h4">
+            Sign Up
+          </Typography>
+        </Box>
+        {!!error && <Alert severity="error">{error}</Alert>}
         <Formik
           initialValues={{ email: "", password: "", passwordConfirm: "" }}
           validate={validate}
@@ -110,13 +119,13 @@ export const SignUp: React.FC = () => {
         >
           <SignupForm />
         </Formik>
-        <p className={styles["text-center"]}>
+        <Typography align="center">
           Already have an account?{" "}
-          <Link to="/login" className={styles["link"]}>
+          <Button onClick={() => push("/login")} color="primary">
             Log In
-          </Link>
-        </p>
-      </div>
+          </Button>
+        </Typography>
+      </Card>
     </Box>
   );
 };
