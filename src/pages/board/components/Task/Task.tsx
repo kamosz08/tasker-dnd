@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { CARD_TYPE, statuses } from "../../../../consts";
 import { TaskType, DragableTaskType } from "../../../../types";
-import { TaskModal } from "../TaskModal/TaskModal";
+import { TaskEditModal } from "../TaskEditModal/TaskEditModal";
 import styles from "./styles.module.css";
 
 type Props = {
@@ -79,7 +79,7 @@ export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
         <p>{item.title}</p>
         <p>{item.description}</p>
       </div>
-      <TaskModal item={item} onClose={onClose} show={show} />
+      <TaskEditModal item={item} onClose={onClose} show={show} />
     </>
   );
 };

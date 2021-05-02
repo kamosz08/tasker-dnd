@@ -1,0 +1,14 @@
+.column {
+  min-height: 400px;
+}
+.column:hover .button {
+  display: block !important;
+}
+
+.button {
+  display: none !important;
+  font-size: 12px !important;
+  margin-left: 8px !important;
+  margin-top: 8px !important;
+  color: rgba(0,0,0,0.5) !important;
+}

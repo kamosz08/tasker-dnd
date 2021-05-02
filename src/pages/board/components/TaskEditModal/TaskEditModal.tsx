@@ -26,7 +26,7 @@ const customStyles = {
   },
 };
 
-export const TaskModal: React.FC<Props> = ({ show, onClose, item }) => {
+export const TaskEditModal: React.FC<Props> = ({ show, onClose, item }) => {
   return (
     <Modal isOpen={show} onRequestClose={onClose} style={customStyles}>
       <div className={styles.wrapper}>

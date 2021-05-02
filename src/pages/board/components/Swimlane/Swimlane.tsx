@@ -1,7 +1,10 @@
-import React from "react";
+import { Box, Button } from "@material-ui/core";
+import React, { useState } from "react";
 import { DropTargetMonitor, useDrop } from "react-dnd";
 import { CARD_TYPE } from "../../../../consts";
 import { DragableTaskType } from "../../../../types";
+import { TaskAddModal } from "../TaskAddModal/TaskAddModal";
+import styles from "./styles.module.css";
 
 export type DropFunction = (
   item: DragableTaskType,
@@ -15,6 +18,10 @@ type Props = {
 };
 
 export const Swimlane: React.FC<Props> = ({ onDrop, children, status }) => {
+  const [show, setShow] = useState(false);
+  const onOpen = () => setShow(true);
+  const onClose = () => setShow(false);
+
   const [{ isOver }, drop] = useDrop({
     accept: CARD_TYPE,
     drop: (item: DragableTaskType, monitor) => {
@@ -26,15 +33,19 @@ export const Swimlane: React.FC<Props> = ({ onDrop, children, status }) => {
   });
 
   return (
-    <div ref={drop} style={{ minHeight: 400 }}>
-      <div
-        style={{
-          minHeight: 400,
-          backgroundColor: isOver ? "yellow" : "",
-        }}
-      >
-        {children}
+    <>
+      <div ref={drop} style={{ minHeight: 400 }}>
+        <Box
+          className={styles.column}
+          style={{ backgroundColor: isOver ? "yellow" : "" }}
+        >
+          {children}
+          <Button variant="text" className={styles.button} onClick={onOpen}>
+            + Add item
+          </Button>
+        </Box>
       </div>
-    </div>
+      <TaskAddModal onClose={onClose} show={show} />
+    </>
   );
 };
