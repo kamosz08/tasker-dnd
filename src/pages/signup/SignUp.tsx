@@ -10,6 +10,7 @@ import { FormikInput } from "../../shared/FormikInput/FormikInput";
 
 type FormValues = {
   email: string;
+  displayName: string;
   password: string;
   passwordConfirm: string;
 };
@@ -25,6 +26,11 @@ const SignupForm: React.FC = () => {
         type="email"
         name="email"
         placeholder="Email"
+        component={FormikInput}
+      />
+      <Field
+        name="displayName"
+        placeholder="Display name"
         component={FormikInput}
       />
       <Field
@@ -73,6 +79,14 @@ export const SignUp: React.FC = () => {
     } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
       errors.email = "Invalid email address";
     }
+    if (!values.displayName) {
+      errors.displayName = "Required";
+    } else if (values.displayName.length < 4) {
+      errors.displayName = "Minimum length is 4";
+    } else if (values.displayName.length > 24) {
+      errors.displayName = "Maximum length is 24";
+    }
+
     return errors;
   };
 
@@ -85,7 +99,7 @@ export const SignUp: React.FC = () => {
       return;
     }
     try {
-      await signUp(values.email, values.password);
+      await signUp(values.email, values.password, values.displayName);
       push("/");
     } catch (error) {
       if (typeof error.message === "string") {
@@ -113,7 +127,12 @@ export const SignUp: React.FC = () => {
         </Box>
         {!!error && <Alert severity="error">{error}</Alert>}
         <Formik
-          initialValues={{ email: "", password: "", passwordConfirm: "" }}
+          initialValues={{
+            email: "",
+            password: "",
+            passwordConfirm: "",
+            displayName: "",
+          }}
           validate={validate}
           onSubmit={onSubmit}
         >

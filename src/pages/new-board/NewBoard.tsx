@@ -9,9 +9,11 @@ import firebase from "firebase/app";
 import { statuses } from "../../consts";
 import { FormikInput } from "../../shared/FormikInput/FormikInput";
 import Alert from "@material-ui/lab/Alert";
+import { BoardType } from "../../types";
 
 type FormValues = {
   name: string;
+  description: string;
 };
 
 type Errors = Partial<FormValues>;
@@ -21,6 +23,13 @@ const NewBoardForm: React.FC = () => {
   return (
     <Form>
       <Field name="name" placeholder="Board name" component={FormikInput} />
+      <Field
+        name="description"
+        placeholder="Description"
+        multiline
+        rows={3}
+        component={FormikInput}
+      />
       <Box marginTop="16px" marginBottom="16px">
         <Button
           type="submit"
@@ -45,9 +54,18 @@ export const NewBoard: React.FC = () => {
     const errors: Errors = {};
     if (!values.name) {
       errors.name = "Required";
-    }
-    if (values.name.length >= 24) {
+    } else if (values.name.length > 24) {
       errors.name = "Maximum length is 24";
+    } else if (values.name.length < 4) {
+      errors.name = "Minimum length is 4";
+    }
+
+    if (!values.description) {
+      errors.description = "Required";
+    } else if (values.description.length > 180) {
+      errors.description = "Maximum length is 180";
+    } else if (values.description.length < 20) {
+      errors.description = "Minimum length is 20";
     }
 
     return errors;
@@ -55,22 +73,32 @@ export const NewBoard: React.FC = () => {
 
   const onSubmit = async (
     values: FormValues,
-    { setSubmitting }: FormikHelpers<FormValues>
+    { setSubmitting, resetForm }: FormikHelpers<FormValues>
   ) => {
     try {
       setError("");
-      await firestoreDB
-        .collection("boards")
-        .add({ tasks: [], statuses: statuses, ...values })
-        .then((newBoardRef) =>
-          firestoreDB
-            .collection("users")
-            .doc(user!.uid)
-            .update({
-              boards: firebase.firestore.FieldValue.arrayUnion(newBoardRef.id),
-            })
-        );
-      push("/");
+
+      const newBoardRef = firestoreDB.collection("boards").doc();
+      const newBoard: BoardType = {
+        id: newBoardRef.id,
+        tasks: [],
+        statuses: statuses,
+        name: values.name,
+        description: values.description,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
+        createdBy: { userId: user!.id, displayName: user!.displayName },
+        participants: [{ userId: user!.id, displayName: user!.displayName }],
+      };
+      await newBoardRef.set(newBoard).then(() =>
+        firestoreDB
+          .collection("users")
+          .doc(user!.id)
+          .update({
+            boards: firebase.firestore.FieldValue.arrayUnion(newBoardRef.id),
+          })
+      );
+      resetForm();
     } catch (error) {
       if (typeof error.message === "string") {
         setError(error.message);
@@ -83,7 +111,7 @@ export const NewBoard: React.FC = () => {
 
   return (
     <Box width="100%" display="flex" justifyContent="center">
-      <Box>
+      <Box width="450px">
         <Box marginTop="16px" marginBottom="16px">
           <Typography align="center" variant="h5">
             Add new board
@@ -91,7 +119,7 @@ export const NewBoard: React.FC = () => {
         </Box>
         {!!error && <Alert severity="error">{error}</Alert>}
         <Formik
-          initialValues={{ name: "" }}
+          initialValues={{ name: "", description: "" }}
           validate={validate}
           onSubmit={onSubmit}
         >

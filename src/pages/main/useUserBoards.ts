@@ -14,7 +14,7 @@ export const useUserBoards = () => {
         if (!snapshot.empty) {
           const snaphotData: BoardType[] = [];
           snapshot.forEach((doc) =>
-            snaphotData.push({ id: doc.id, name: doc.data().name })
+            snaphotData.push({ ...(doc.data() as BoardType) })
           );
           setData(snaphotData);
         }

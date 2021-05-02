@@ -36,29 +36,24 @@ const BoardCard: React.FC<{ board: BoardType }> = ({ board }) => {
             {board.name}
           </Typography>
           <Typography color="textSecondary" variant="subtitle1" align="left">
-            Created by: Mayuuko
+            Created by: {board.createdBy.displayName}
           </Typography>
         </Box>
         <Box>
           <Typography color="textSecondary" variant="body2" align="right">
-            Created at: 17-02-2021
+            Created at: {board.createdAt.toDate().toDateString()}
           </Typography>
           <Typography color="textSecondary" variant="body2" align="right">
-            Last updated: 19-02-2021
+            Last updated: {board.lastUpdated.toDate().toDateString()}
           </Typography>
         </Box>
       </Box>
       <Box marginTop="8px" marginBottom="8px">
-        <Typography>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium
-          velit magni sapiente? Cupiditate quae dolorem iure fugit repellat non
-          quos veritatis nostrum porro accusantium. Est vel ab consequatur in
-          suscipit.
-        </Typography>
+        <Typography align="left">{board.description}</Typography>
       </Box>
       <Box display="flex" justifyContent="flex-start">
-        <Chip label="17 items" variant="outlined" />
-        <Chip label="3 users" variant="outlined" />
+        <Chip label={`${board.tasks.length} items`} variant="outlined" />
+        <Chip label={`${board.participants.length} users`} variant="outlined" />
       </Box>
       <Box display="flex" justifyContent="flex-end">
         <Button color="primary" onClick={goToBoard(board.id)}>
@@ -102,7 +97,9 @@ export const Main: React.FC = () => {
       <Box display="flex" justifyContent="center" flexWrap="wrap">
         <Box width="100%" textAlign="center">
           <NewBoard />
-          <Divider variant="fullWidth" />
+          <Box marginBottom="16px">
+            <Divider variant="fullWidth" />
+          </Box>
           <Boards />
         </Box>
       </Box>

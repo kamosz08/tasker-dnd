@@ -45,7 +45,7 @@ export const Navbar: React.FC = () => {
         {!!user && (
           <Box display="flex" alignItems="center">
             <Box marginRight="12px" fontSize={14} color="rgb(35 42 95)">
-              {user.email}
+              {user.displayName} ({user.email})
             </Box>
             <Button variant="outlined" color="primary" onClick={handleLogout}>
               Log out

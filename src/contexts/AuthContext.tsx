@@ -1,11 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
 import { auth, firestoreDB } from "../firebase";
 import firebase from "firebase/app";
+import { UserType } from "../types";
 
 type Context = {
-  user: firebase.User | null;
+  user: UserType | null;
   loaded: boolean;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (
+    email: string,
+    password: string,
+    displayName: string
+  ) => Promise<void>;
   logIn: (
     email: string,
     password: string
@@ -17,29 +22,33 @@ type Context = {
 const AuthContext = React.createContext<Context | undefined>(undefined);
 
 export const AuthProvider: React.FC = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<firebase.User | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setCurrentUser(user);
+    const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
+      const dbUser = await firestoreDB.collection("users").doc(user?.uid).get();
+      setCurrentUser(dbUser.data() as UserType);
       setLoaded(true);
     });
     return () => {
-      unsubscribe();
+      unsubscribeAuth();
     };
   }, []);
 
-  const signUp = (email: string, password: string) => {
+  const signUp = (email: string, password: string, displayName: string) => {
     return auth
       .createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
+        const newUser: UserType = {
+          email: userCredential.user!.email!,
+          id: userCredential.user!.uid,
+          displayName,
+        };
         return firestoreDB
           .collection("users")
           .doc(userCredential.user?.uid)
-          .set({
-            email: userCredential.user?.email,
-          });
+          .set(newUser);
       });
   };
 
