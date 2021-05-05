@@ -1,17 +1,3 @@
-.wrapper {
-  display: flex;
-  height: 100%;
-}
-
-.main {
-  flex: 3;
-  padding-right: 16px;
-}
-
-.right-sidebar {
-  flex: 1;
-}
-
 .info-card {
   background-color: #F7F9FA;
   border: 1px solid #e0e8ec;
@@ -21,17 +7,18 @@
   grid-auto-rows: 32px;
 }
 
-.flex-row {
-  display: flex;
-  margin-bottom: 16px;
-}
-
 .icon-button {
   cursor: pointer;
   padding: 2px 16px;
   border: 1px solid #b9d1e4;
   margin-right: 2px;
+  display: flex;
+  align-items: center;
 }
+.icon-button > svg {
+  color: #7d8286;
+}
+
 .icon-button:first-of-type {
   border-radius: 3px 0 0 3px;
 }
