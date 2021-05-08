@@ -7,10 +7,20 @@ export type UserType = {
 };
 
 export type TaskType = {
-  id: number;
+  id: string;
   title: string;
   description: string;
-  status: string;
+  status: TaskStatus;
+  createdBy: {
+    userId: string;
+    displayName: string;
+  };
+  createdAt: firebase.firestore.Timestamp;
+  lastUpdated: firebase.firestore.Timestamp;
+  updatedBy: {
+    userId: string;
+    displayName: string;
+  };
 };
 
 export type TaskStatus = {

@@ -14,7 +14,7 @@ type Props = {
 export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
   const ref = useRef<HTMLDivElement>(null);
   const statusColor =
-    statuses.find((s) => s.name === item.status)?.color || "blue";
+    statuses.find((s) => s.name === item.status.name)?.color || "blue";
 
   const [, drop] = useDrop({
     accept: CARD_TYPE,

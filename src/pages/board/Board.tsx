@@ -1,24 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Task } from "./components/Task/Task";
 import { DropFunction, Swimlane } from "./components/Swimlane/Swimlane";
 import styles from "./styles.module.css";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useBoard } from "./useBoard";
-import { useParams } from "react-router";
 import { Box, CircularProgress } from "@material-ui/core";
+import { BoardProvider, useBoard } from "../../contexts/BoardContext";
 
-export const Board: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const { board, status } = useBoard(id);
+const BoardComponent: React.FC = () => {
+  const { board, status } = useBoard();
   const statuses = board?.statuses || [];
   const [items, setItems] = useState(board?.tasks || []);
 
-  const onDrop: DropFunction = (item, monitor, status) => {
+  useEffect(() => {
+    if (board?.tasks) setItems(board?.tasks);
+  }, [JSON.stringify(board?.tasks)]);
+
+  const onDrop: DropFunction = (item, monitor, taskStatus) => {
     setItems((prevState) => {
       const newItems = prevState
         .filter((i) => i.id !== item.id)
-        .concat({ ...item, status });
+        .concat({ ...item, status: taskStatus });
       return [...newItems];
     });
   };
@@ -49,9 +51,9 @@ export const Board: React.FC = () => {
           return (
             <div key={s.name} className={styles.column}>
               <p className={styles["column-header"]}>{s.name}</p>
-              <Swimlane onDrop={onDrop} status={s.name}>
+              <Swimlane onDrop={onDrop} status={s}>
                 {items
-                  .filter((i) => i.status === s.name)
+                  .filter((i) => i.status.name === s.name)
                   .map((i, idx) => (
                     <Task
                       key={i.id}
@@ -66,5 +68,13 @@ export const Board: React.FC = () => {
         })}
       </div>
     </DndProvider>
+  );
+};
+
+export const Board: React.FC = () => {
+  return (
+    <BoardProvider>
+      <BoardComponent />
+    </BoardProvider>
   );
 };

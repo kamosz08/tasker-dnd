@@ -2,19 +2,19 @@ import { Box, Button } from "@material-ui/core";
 import React, { useState } from "react";
 import { DropTargetMonitor, useDrop } from "react-dnd";
 import { CARD_TYPE } from "../../../../consts";
-import { DragableTaskType } from "../../../../types";
+import { DragableTaskType, TaskStatus } from "../../../../types";
 import { TaskAddModal } from "../TaskAddModal/TaskAddModal";
 import styles from "./styles.module.css";
 
 export type DropFunction = (
   item: DragableTaskType,
   monitor: DropTargetMonitor<unknown, unknown>,
-  status: string
+  status: TaskStatus
 ) => void;
 
 type Props = {
   onDrop: DropFunction;
-  status: string;
+  status: TaskStatus;
 };
 
 export const Swimlane: React.FC<Props> = ({ onDrop, children, status }) => {
@@ -45,7 +45,7 @@ export const Swimlane: React.FC<Props> = ({ onDrop, children, status }) => {
           </Button>
         </Box>
       </div>
-      <TaskAddModal onClose={onClose} show={show} />
+      <TaskAddModal onClose={onClose} show={show} taskStatus={status} />
     </>
   );
 };

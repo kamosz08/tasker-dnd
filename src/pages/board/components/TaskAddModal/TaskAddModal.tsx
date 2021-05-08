@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Tooltip } from "@material-ui/core";
+import { Box, Button, Tooltip } from "@material-ui/core";
 import React, { useState } from "react";
 import Modal from "react-modal";
 import styles from "./styles.module.css";
@@ -7,10 +7,14 @@ import LinkOutlinedIcon from "@material-ui/icons/LinkOutlined";
 import { Field, Form, Formik, FormikHelpers, useFormikContext } from "formik";
 import { useHistory } from "react-router";
 import { FormikInput } from "../../../../shared/FormikInput/FormikInput";
+import { Notification } from "../../../../shared/Notification/Notification";
+import { useCreateTask } from "./useCreateTask";
+import { TaskStatus } from "../../../../types";
 
 type Props = {
   show: boolean;
   onClose: () => void;
+  taskStatus: TaskStatus;
 };
 
 type FormValues = {
@@ -95,9 +99,15 @@ const AddTaskForm: React.FC = () => {
   );
 };
 
-export const TaskAddModal: React.FC<Props> = ({ show, onClose }) => {
+export const TaskAddModal: React.FC<Props> = ({
+  show,
+  onClose,
+  taskStatus,
+}) => {
   const [error, setError] = useState("");
   const { push } = useHistory();
+  const { createTask } = useCreateTask();
+
   const validate = (values: FormValues) => {
     const errors: Errors = {};
     if (!values.title) {
@@ -117,8 +127,8 @@ export const TaskAddModal: React.FC<Props> = ({ show, onClose }) => {
   ) => {
     try {
       setError("");
-      // await logIn(values.email, values.password);
-      push("/");
+      await createTask({ ...values, status: taskStatus });
+      onClose();
     } catch (error) {
       if (typeof error.message === "string") {
         setError(error.message);
@@ -130,14 +140,21 @@ export const TaskAddModal: React.FC<Props> = ({ show, onClose }) => {
   };
 
   return (
-    <Modal isOpen={show} onRequestClose={onClose} style={customStyles}>
-      <Formik
-        initialValues={{ title: "", description: "" }}
-        validate={validate}
-        onSubmit={onSubmit}
-      >
-        <AddTaskForm />
-      </Formik>
-    </Modal>
+    <>
+      <Notification
+        handleClose={() => setError("")}
+        severity="error"
+        message={error}
+      />
+      <Modal isOpen={show} onRequestClose={onClose} style={customStyles}>
+        <Formik
+          initialValues={{ title: "", description: "" }}
+          validate={validate}
+          onSubmit={onSubmit}
+        >
+          <AddTaskForm />
+        </Formik>
+      </Modal>
+    </>
   );
 };
