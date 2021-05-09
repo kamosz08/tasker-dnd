@@ -10,6 +10,10 @@ type Context = {
     taskId: string,
     valuesToUpdate: Partial<TaskType>
   ) => Promise<void>;
+  changeOrderOfTasks: (
+    firstTaskId: string,
+    secondTaskId: string
+  ) => Promise<void>;
 };
 
 type BoardSnapshotData = Omit<BoardType, "id" | "tasks"> & { tasks: string[] };
@@ -116,10 +120,31 @@ export const BoardProvider: React.FC = ({ children }) => {
     return firestoreDB.collection("tasks").doc(taskId).update(valuesToUpdate);
   };
 
+  const changeOrderOfTasks = (firstTaskId: string, secondTaskId: string) => {
+    const currentTasksIds = data!.tasks.map((t) => t.id);
+
+    const firstIndex = currentTasksIds.indexOf(firstTaskId);
+    const secondIndex = currentTasksIds.indexOf(secondTaskId);
+
+    currentTasksIds[firstIndex] = secondTaskId;
+    currentTasksIds[secondIndex] = firstTaskId;
+
+    const tasksWithNewOrder = data!.tasks;
+    const temp = tasksWithNewOrder[firstIndex];
+    tasksWithNewOrder[firstIndex] = tasksWithNewOrder[secondIndex];
+    tasksWithNewOrder[secondIndex] = temp;
+    setData((oldData) => ({ ...oldData!, tasks: tasksWithNewOrder }));
+    return firestoreDB
+      .collection("boards")
+      .doc(boardId)
+      .update({ tasks: currentTasksIds });
+  };
+
   const contextValue = {
     board: data,
     status,
     updateTask,
+    changeOrderOfTasks,
   };
 
   return (

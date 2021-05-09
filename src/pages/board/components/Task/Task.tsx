@@ -18,12 +18,12 @@ export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
 
   const [, drop] = useDrop({
     accept: CARD_TYPE,
-    hover(item: DragableTaskType, monitor) {
+    hover(draggedItem: DragableTaskType, monitor) {
       if (!ref.current) {
         return;
       }
 
-      const dragIndex = item.index;
+      const dragIndex = draggedItem.index;
       const hoverIndex = index;
 
       if (dragIndex === hoverIndex) {
@@ -43,7 +43,8 @@ export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
         return;
       }
       changeOrderOfItems(dragIndex, hoverIndex);
-      item.index = hoverIndex;
+      draggedItem.index = hoverIndex;
+      console.log(draggedItem, item);
     },
   });
 

@@ -8,7 +8,7 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { BoardProvider, useBoard } from "../../contexts/BoardContext";
 
 const BoardComponent: React.FC = () => {
-  const { board, status, updateTask } = useBoard();
+  const { board, status, updateTask, changeOrderOfTasks } = useBoard();
   const statuses = board?.statuses || [];
   const [items, setItems] = useState(board?.tasks || []);
 
@@ -28,14 +28,7 @@ const BoardComponent: React.FC = () => {
   };
 
   const changeOrderOfItems = (dragIndex: number, hoverIndex: number) => {
-    console.log(dragIndex, hoverIndex);
-
-    const item = items[dragIndex];
-    setItems((prevState) => {
-      const newItems = prevState.filter((i, idx) => idx !== dragIndex);
-      newItems.splice(hoverIndex, 0, item);
-      return [...newItems];
-    });
+    changeOrderOfTasks(items[dragIndex].id, items[hoverIndex].id);
   };
 
   if (status === "idle" || status === "loading")
@@ -62,7 +55,7 @@ const BoardComponent: React.FC = () => {
                     <Task
                       key={i.id}
                       item={i}
-                      index={idx}
+                      index={idx + 1}
                       changeOrderOfItems={changeOrderOfItems}
                     />
                   ))}
