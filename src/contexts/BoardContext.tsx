@@ -6,6 +6,10 @@ import { useParams } from "react-router";
 type Context = {
   board: BoardType | null;
   status: DataStatus;
+  updateTask: (
+    taskId: string,
+    valuesToUpdate: Partial<TaskType>
+  ) => Promise<void>;
 };
 
 type BoardSnapshotData = Omit<BoardType, "id" | "tasks"> & { tasks: string[] };
@@ -18,7 +22,7 @@ export const BoardProvider: React.FC = ({ children }) => {
   const { id: boardId } = useParams<{ id: string }>();
 
   useEffect(() => {
-    const unsubscribeTasks = [];
+    const unsubscribeTasks: { id: string; unsubscribe: () => void }[] = [];
     let isFirstRun = true;
     setStatus("loading");
 
@@ -64,8 +68,25 @@ export const BoardProvider: React.FC = ({ children }) => {
 
     const manageTasksSubscriptions = async (snaphotData: BoardSnapshotData) => {
       const snapshotTasks = snaphotData.tasks;
+      const subscribedTasks = unsubscribeTasks.map((item) => item.id);
+
       //find new tasks and subscribe
+      const addedTasks = snapshotTasks.filter(
+        (t) => !subscribedTasks.includes(t)
+      );
+      addedTasks.forEach((taskId) => {
+        addTaskSubscription(taskId);
+      });
+
       //find removed tasks and unsubscribe
+      const removedTasks = subscribedTasks.filter(
+        (t) => !snapshotTasks.includes(t)
+      );
+      unsubscribeTasks
+        .filter((item) => removedTasks.includes(item.id))
+        .forEach((subscribedTask) => {
+          subscribedTask.unsubscribe();
+        });
     };
 
     const unsubscribeBoard = firestoreDB
@@ -91,9 +112,14 @@ export const BoardProvider: React.FC = ({ children }) => {
     };
   }, [boardId]);
 
+  const updateTask = (taskId: string, valuesToUpdate: Partial<TaskType>) => {
+    return firestoreDB.collection("tasks").doc(taskId).update(valuesToUpdate);
+  };
+
   const contextValue = {
     board: data,
     status,
+    updateTask,
   };
 
   return (

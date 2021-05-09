@@ -2,7 +2,7 @@ import React from "react";
 import { Box, TextField } from "@material-ui/core";
 import styles from "./styles.module.css";
 
-export const FormikInput = ({ field, form, ...props }: any) => {
+export const FormikInput: React.FC = ({ field, form, ...props }: any) => {
   const showError = !!form.errors[field.name] && !!form.touched[field.name];
 
   return (

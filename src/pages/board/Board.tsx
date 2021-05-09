@@ -8,7 +8,7 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { BoardProvider, useBoard } from "../../contexts/BoardContext";
 
 const BoardComponent: React.FC = () => {
-  const { board, status } = useBoard();
+  const { board, status, updateTask } = useBoard();
   const statuses = board?.statuses || [];
   const [items, setItems] = useState(board?.tasks || []);
 
@@ -16,16 +16,20 @@ const BoardComponent: React.FC = () => {
     if (board?.tasks) setItems(board?.tasks);
   }, [JSON.stringify(board?.tasks)]);
 
-  const onDrop: DropFunction = (item, monitor, taskStatus) => {
-    setItems((prevState) => {
-      const newItems = prevState
-        .filter((i) => i.id !== item.id)
-        .concat({ ...item, status: taskStatus });
-      return [...newItems];
-    });
+  const onDrop: DropFunction = (item, _monitor, taskStatus) => {
+    if (item.status.name === taskStatus.name) return;
+    try {
+      setItems((prevItems) => prevItems.filter((i) => i.id !== item.id));
+      updateTask(item.id, { status: taskStatus });
+    } catch (error) {
+      console.error(error);
+      setItems((prevItems) => [...prevItems, item]);
+    }
   };
 
   const changeOrderOfItems = (dragIndex: number, hoverIndex: number) => {
+    console.log(dragIndex, hoverIndex);
+
     const item = items[dragIndex];
     setItems((prevState) => {
       const newItems = prevState.filter((i, idx) => idx !== dragIndex);

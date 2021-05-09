@@ -22,6 +22,7 @@ export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
       if (!ref.current) {
         return;
       }
+
       const dragIndex = item.index;
       const hoverIndex = index;
 
