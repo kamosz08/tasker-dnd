@@ -55,7 +55,7 @@ const BoardComponent: React.FC = () => {
                     <Task
                       key={i.id}
                       item={i}
-                      index={idx + 1}
+                      index={idx}
                       changeOrderOfItems={changeOrderOfItems}
                     />
                   ))}

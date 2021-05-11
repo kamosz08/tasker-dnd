@@ -18,7 +18,7 @@ export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
 
   const [, drop] = useDrop({
     accept: CARD_TYPE,
-    hover(draggedItem: DragableTaskType, monitor) {
+    hover(draggedItem: DragableTaskType) {
       if (!ref.current) {
         return;
       }
@@ -30,21 +30,20 @@ export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
         return;
       }
 
-      const hoveredRect = ref.current.getBoundingClientRect();
-      const hoverMiddleY = (hoveredRect.bottom - hoveredRect.top) / 2;
-      const mousePosition = monitor.getClientOffset();
-      const hoverClientY = mousePosition!.y - hoveredRect.top;
+      // const hoveredRect = ref.current.getBoundingClientRect();
+      // const hoverMiddleY = (hoveredRect.bottom - hoveredRect.top) / 2;
+      // const mousePosition = monitor.getClientOffset();
+      // const hoverClientY = mousePosition!.y - hoveredRect.top;
 
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
-      }
+      // if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+      //   return;
+      // }
 
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
-      }
+      // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+      //   return;
+      // }
       changeOrderOfItems(dragIndex, hoverIndex);
       draggedItem.index = hoverIndex;
-      console.log(draggedItem, item);
     },
   });
 

@@ -5,7 +5,6 @@ import styles from "./styles.module.css";
 import LabelOutlinedIcon from "@material-ui/icons/LabelOutlined";
 import LinkOutlinedIcon from "@material-ui/icons/LinkOutlined";
 import { Field, Form, Formik, FormikHelpers, useFormikContext } from "formik";
-import { useHistory } from "react-router";
 import { FormikInput } from "../../../../shared/FormikInput/FormikInput";
 import { Notification } from "../../../../shared/Notification/Notification";
 import { useCreateTask } from "./useCreateTask";
@@ -105,7 +104,6 @@ export const TaskAddModal: React.FC<Props> = ({
   taskStatus,
 }) => {
   const [error, setError] = useState("");
-  const { push } = useHistory();
   const { createTask } = useCreateTask();
 
   const validate = (values: FormValues) => {
