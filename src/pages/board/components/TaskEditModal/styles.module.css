@@ -1,17 +1,3 @@
-.wrapper {
-  display: flex;
-  height: 100%;
-}
-
-.main {
-  flex: 3;
-  padding-right: 16px;
-}
-
-.right-sidebar {
-  flex: 1;
-}
-
 .info-card {
   background-color: #F7F9FA;
   border: 1px solid #e0e8ec;
@@ -19,11 +5,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-auto-rows: 32px;
-}
-
-.flex-row {
-  display: flex;
-  margin-bottom: 16px;
 }
 
 .icon-button {
@@ -47,18 +28,4 @@
 
 .name {
   color: #3065b7;
-}
-
-.title {
-  font-size: 1.2rem;
-}
-
-.add-comment {
-  width: 90%;
-  margin-right: 16px;
-  margin-top: 16px;
-}
-
-.add-comment-button {
-  margin-top: 8px;
 }
