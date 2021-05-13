@@ -1,16 +1,29 @@
-import { Box, Button, TextField, Tooltip, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Popover,
+  Tooltip,
+  Typography,
+} from "@material-ui/core";
 import { Field, Form, Formik, FormikHelpers, useFormikContext } from "formik";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Modal from "react-modal";
 import { TaskType } from "../../../../types";
 import styles from "./styles.module.css";
 import LabelOutlinedIcon from "@material-ui/icons/LabelOutlined";
 import LinkOutlinedIcon from "@material-ui/icons/LinkOutlined";
+import LabelIcon from "@material-ui/icons/Label";
+import AddIcon from "@material-ui/icons/Add";
 import { FormikInput } from "../../../../shared/FormikInput/FormikInput";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import { formatDistance, compareAsc } from "date-fns";
 import { Notification } from "../../../../shared/Notification/Notification";
 import { useUpdateTask } from "./useUpdateTask";
+import { AddLabelDialog } from "./AddLabelDialog";
 
 type Props = {
   show: boolean;
@@ -49,18 +62,69 @@ const EditCardForm: React.FC<EditFormProps> = ({ item }) => {
     handleSubmit,
   } = useFormikContext<FormValues>();
   const [isEditMode, setEditMode] = useState(false);
+  const [isLabelpopoverOpen, setLabelPopover] = useState(false);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const labelButtonRef = useRef<HTMLDivElement>(null);
 
   const hasBeenUpdated =
     item.lastUpdated &&
     compareAsc(item.createdAt.toDate(), item.lastUpdated.toDate()) !== 0;
+
+  const renderLabelPopover = () => (
+    <Popover
+      open={isLabelpopoverOpen}
+      onClose={() => setLabelPopover(false)}
+      anchorEl={labelButtonRef.current}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "left",
+      }}
+    >
+      <Box padding="8px 16px">
+        <List component="nav" aria-label="main mailbox folders">
+          {["labelka1", "labelka2"].map((label) => (
+            <ListItem key={label} button>
+              <ListItemIcon>
+                <LabelIcon />
+              </ListItemIcon>
+              <ListItemText primary={label} />
+            </ListItem>
+          ))}
+          <ListItem
+            key="add new label"
+            button
+            onClick={() => setDialogOpen(true)}
+          >
+            <ListItemIcon>
+              <AddIcon />
+            </ListItemIcon>
+            <ListItemText primary="Add label" />
+          </ListItem>
+        </List>
+      </Box>
+    </Popover>
+  );
 
   return (
     <Form>
       <Box display="flex" height="100%">
         <Box flex={3} paddingRight="16px">
           <Box display="flex" marginBottom="16px">
+            {renderLabelPopover()}
+            <AddLabelDialog
+              isDialogOpen={isDialogOpen}
+              onClose={() => setDialogOpen(false)}
+            />
             <Tooltip title="Add tag" placement="top">
-              <div className={styles["icon-button"]}>
+              <div
+                className={styles["icon-button"]}
+                ref={labelButtonRef}
+                onClick={() => setLabelPopover(true)}
+              >
                 <LabelOutlinedIcon />
               </div>
             </Tooltip>

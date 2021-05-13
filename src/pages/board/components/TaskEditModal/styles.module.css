@@ -19,6 +19,9 @@
 .icon-button:last-of-type {
   border-radius: 0 3px 3px 0;
 }
+.icon-button > svg {
+  color: #7d8286;
+}
 
 .small {
   font-size: 0.85em;

@@ -1,9 +1,7 @@
-import { Box, Button, Tooltip } from "@material-ui/core";
+import { Box, Button } from "@material-ui/core";
 import React, { useState } from "react";
 import Modal from "react-modal";
 import styles from "./styles.module.css";
-import LabelOutlinedIcon from "@material-ui/icons/LabelOutlined";
-import LinkOutlinedIcon from "@material-ui/icons/LinkOutlined";
 import { Field, Form, Formik, FormikHelpers, useFormikContext } from "formik";
 import { FormikInput } from "../../../../shared/FormikInput/FormikInput";
 import { Notification } from "../../../../shared/Notification/Notification";
@@ -46,18 +44,6 @@ const AddTaskForm: React.FC = () => {
     <Form>
       <Box display="flex" height="100%">
         <Box flex={3} paddingRight="16px">
-          <Box display="flex" marginBottom="16px">
-            <Tooltip title="Add tag" placement="top">
-              <div className={styles["icon-button"]}>
-                <LabelOutlinedIcon />
-              </div>
-            </Tooltip>
-            <Tooltip title="Link another task" placement="top">
-              <div className={styles["icon-button"]}>
-                <LinkOutlinedIcon />
-              </div>
-            </Tooltip>
-          </Box>
           <Field name="title" placeholder="title" component={FormikInput} />
           <Field
             name="description"
