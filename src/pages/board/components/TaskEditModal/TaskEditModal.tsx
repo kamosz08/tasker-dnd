@@ -1,4 +1,12 @@
-import { Box, Button, Chip, Tooltip, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Chip,
+  MenuItem,
+  Select,
+  Tooltip,
+  Typography,
+} from "@material-ui/core";
 import { Field, Form, Formik, FormikHelpers, useFormikContext } from "formik";
 import React, { useRef, useState } from "react";
 import Modal from "react-modal";
@@ -51,6 +59,7 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId }) => {
     handleSubmit,
   } = useFormikContext<FormValues>();
   const { board } = useBoard();
+  const { updateTask } = useUpdateTask();
   const item = board!.tasks.find((t) => t.id === itemId)!;
 
   const { removeLabelFromTask } = useUpdateTask();
@@ -66,8 +75,27 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId }) => {
   const taskLabels = item?.labels || [];
   const labels = boardLabels.filter((l) => taskLabels.includes(l.name));
 
+  const boardParticipants = board!.participants || [];
+  const assignee = item.assignee;
+
+  const boardStatuses = board!.statuses;
+
   const handleDeleteLabel = (label: string) => {
     removeLabelFromTask(item.id, label);
+  };
+
+  const handleAsigneeChange = (assigneeId: string | 1) => {
+    const newAssignee =
+      assigneeId === 1
+        ? null
+        : boardParticipants.find((user) => user.userId === assigneeId)!;
+
+    updateTask(itemId, { assignee: newAssignee });
+  };
+
+  const handleStatusChange = (statusName: string) => {
+    const newStatus = boardStatuses.find((s) => s.name === statusName)!;
+    updateTask(itemId, { status: newStatus });
   };
 
   return (
@@ -163,12 +191,47 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId }) => {
         </Box>
         <Box flex={1}>
           <div className={styles["info-card"]}>
-            {[1, 2, 3, 4, 5].map((item) => (
-              <React.Fragment key={item}>
-                <div className="left">left</div>
-                <div className="right">right</div>
-              </React.Fragment>
-            ))}
+            <>
+              <Box display="flex" alignItems="center" marginRight="32px">
+                status
+              </Box>
+              <div className="right">
+                <Select
+                  label={null}
+                  className={styles["link-select"]}
+                  value={item.status.name}
+                  onChange={(e) => handleStatusChange(e.target.value as string)}
+                >
+                  {boardStatuses.map((status) => (
+                    <MenuItem key={status.name} value={status.name}>
+                      {status.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+            </>
+            <>
+              <Box display="flex" alignItems="center" marginRight="32px">
+                assignee
+              </Box>
+              <div className="right">
+                <Select
+                  label={null}
+                  className={styles["link-select"]}
+                  value={assignee?.userId || 1}
+                  onChange={(e) =>
+                    handleAsigneeChange(e.target.value as string)
+                  }
+                >
+                  <MenuItem value={1}>Unassigned</MenuItem>
+                  {boardParticipants.map((user) => (
+                    <MenuItem key={user.userId} value={user.userId}>
+                      {user.displayName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+            </>
           </div>
         </Box>
       </Box>

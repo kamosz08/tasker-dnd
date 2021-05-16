@@ -32,3 +32,20 @@
 .name {
   color: #3065b7;
 }
+
+.link-select {
+  width: 110px;
+  color: #3065b7 !important;
+}
+
+.link-select::after {
+  display: none;
+}
+
+.link-select::before {
+  display: none;
+}
+
+.link-select div:focus {
+  background-color: inherit;
+}

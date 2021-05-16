@@ -23,6 +23,7 @@ export const useCreateTask = () => {
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
       updatedBy: { userId: user!.id, displayName: user!.displayName },
       labels: [],
+      assignee: null,
     };
 
     await newTaskRef.set(newTask).then(() =>

@@ -22,6 +22,10 @@ export type TaskType = {
     displayName: string;
   };
   labels: string[];
+  assignee: {
+    userId: string;
+    displayName: string;
+  } | null;
 };
 
 export type TaskStatus = {

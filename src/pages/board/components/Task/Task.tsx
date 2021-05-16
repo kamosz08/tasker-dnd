@@ -1,17 +1,22 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { CARD_TYPE, statuses } from "../../../../consts";
 import { TaskType, DragableTaskType } from "../../../../types";
-import { TaskEditModal } from "../TaskEditModal/TaskEditModal";
 import styles from "./styles.module.css";
 
 type Props = {
   item: TaskType;
   index: number;
   changeOrderOfItems: (dragIndex: number, hoverIndex: number) => void;
+  openEditModal: () => void;
 };
 
-export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
+export const Task: React.FC<Props> = ({
+  item,
+  index,
+  changeOrderOfItems,
+  openEditModal,
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const statusColor =
     statuses.find((s) => s.name === item.status.name)?.color || "blue";
@@ -55,10 +60,6 @@ export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
     }),
   });
 
-  const [show, setShow] = useState(false);
-  const onOpen = () => setShow(true);
-  const onClose = () => setShow(false);
-
   const attachRef = () => {
     drag(ref);
     drop(ref);
@@ -75,12 +76,11 @@ export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
           borderLeft: `3px solid ${statusColor}`,
         }}
         className={styles.card}
-        onDoubleClick={onOpen}
+        onDoubleClick={() => openEditModal()}
       >
         <p>{item.title}</p>
         <p>{item.description}</p>
       </div>
-      <TaskEditModal itemId={item.id} onClose={onClose} show={show} />
     </>
   );
 };

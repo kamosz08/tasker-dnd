@@ -6,8 +6,11 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Box, CircularProgress } from "@material-ui/core";
 import { BoardProvider, useBoard } from "../../contexts/BoardContext";
+import { TaskEditModal } from "./components/TaskEditModal/TaskEditModal";
 
-const BoardComponent: React.FC = () => {
+const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
+  openEditModal,
+}) => {
   const { board, status, updateTask, changeOrderOfTasks } = useBoard();
   const statuses = board?.statuses || [];
   const [items, setItems] = useState(board?.tasks || []);
@@ -57,6 +60,7 @@ const BoardComponent: React.FC = () => {
                       item={i}
                       index={idx}
                       changeOrderOfItems={changeOrderOfItems}
+                      openEditModal={() => openEditModal(i.id)}
                     />
                   ))}
               </Swimlane>
@@ -69,9 +73,20 @@ const BoardComponent: React.FC = () => {
 };
 
 export const Board: React.FC = () => {
+  const [editedTaskId, setEditedTaskId] = useState<string | null>(null);
+
   return (
     <BoardProvider>
-      <BoardComponent />
+      <BoardComponent
+        openEditModal={(taskId: string) => setEditedTaskId(taskId)}
+      />
+      {!!editedTaskId && (
+        <TaskEditModal
+          itemId={editedTaskId!}
+          onClose={() => setEditedTaskId(null)}
+          show={!!editedTaskId}
+        />
+      )}
     </BoardProvider>
   );
 };

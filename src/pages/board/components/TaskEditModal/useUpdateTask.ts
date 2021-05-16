@@ -4,7 +4,9 @@ import firebase from "firebase/app";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { useBoard } from "../../../../contexts/BoardContext";
 
-type FormValues = Partial<Pick<TaskType, "description" | "title" | "status">>;
+type FormValues = Partial<
+  Pick<TaskType, "description" | "title" | "status" | "assignee">
+>;
 
 export const useUpdateTask = () => {
   const { user } = useAuth();

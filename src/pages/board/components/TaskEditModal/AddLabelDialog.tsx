@@ -43,47 +43,39 @@ const AddLabelForm: React.FC<Props> = ({ onClose, isDialogOpen }) => {
   } = useFormikContext<FormValues>();
 
   return (
-    <Form>
-      <Dialog open={isDialogOpen} onClose={onClose}>
-        <DialogTitle>Add label</DialogTitle>
-        <DialogContent>
-          <Box minWidth="300px">
-            <Field
-              name="name"
-              placeholder="Label name"
-              component={FormikInput}
-            />
-            <Box marginTop="16px" display="flex" alignItems="center">
-              <LabelIcon style={{ color: values.color }} />
-              <Box marginLeft="8px">
-                <HuePicker
-                  color={values.color}
-                  onChangeComplete={(color) =>
-                    setFieldValue("color", color.hex)
-                  }
-                />
-              </Box>
-              <ErrorMessage name="color" />
+    <Dialog open={isDialogOpen} onClose={onClose}>
+      <DialogTitle>Add label</DialogTitle>
+      <DialogContent>
+        <Box minWidth="300px">
+          <Field name="name" placeholder="Label name" component={FormikInput} />
+          <Box marginTop="16px" display="flex" alignItems="center">
+            <LabelIcon style={{ color: values.color }} />
+            <Box marginLeft="8px">
+              <HuePicker
+                color={values.color}
+                onChangeComplete={(color) => setFieldValue("color", color.hex)}
+              />
             </Box>
+            <ErrorMessage name="color" />
           </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} color="default" disabled={isSubmitting}>
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              handleSubmit();
-              onClose();
-            }}
-            color="primary"
-            disabled={isSubmitting}
-          >
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Form>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="default" disabled={isSubmitting}>
+          Cancel
+        </Button>
+        <Button
+          onClick={() => {
+            handleSubmit();
+            onClose();
+          }}
+          color="primary"
+          disabled={isSubmitting}
+        >
+          Create
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
