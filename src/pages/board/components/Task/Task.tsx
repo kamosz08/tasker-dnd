@@ -80,7 +80,7 @@ export const Task: React.FC<Props> = ({ item, index, changeOrderOfItems }) => {
         <p>{item.title}</p>
         <p>{item.description}</p>
       </div>
-      <TaskEditModal item={item} onClose={onClose} show={show} />
+      <TaskEditModal itemId={item.id} onClose={onClose} show={show} />
     </>
   );
 };

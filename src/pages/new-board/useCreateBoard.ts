@@ -24,6 +24,7 @@ export const useCreateBoard = () => {
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
       createdBy: { userId: user!.id, displayName: user!.displayName },
       participants: [{ userId: user!.id, displayName: user!.displayName }],
+      labels: [],
     };
     await newBoardRef.set(newBoard).then(() =>
       firestoreDB

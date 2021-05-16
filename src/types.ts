@@ -21,6 +21,7 @@ export type TaskType = {
     userId: string;
     displayName: string;
   };
+  labels: string[];
 };
 
 export type TaskStatus = {
@@ -50,4 +51,5 @@ export type BoardType = {
     userId: string;
     displayName: string;
   }[];
+  labels: { name: string; color: string }[];
 };

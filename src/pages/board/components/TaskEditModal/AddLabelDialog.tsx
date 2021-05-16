@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   ErrorMessage,
   Field,
+  Form,
   Formik,
   FormikHelpers,
   useFormikContext,
@@ -18,10 +19,12 @@ import { Notification } from "../../../../shared/Notification/Notification";
 import { FormikInput } from "../../../../shared/FormikInput/FormikInput";
 import { HuePicker } from "react-color";
 import LabelIcon from "@material-ui/icons/Label";
+import { useCreateLabel } from "./useCreateLabel";
 
 type Props = {
   isDialogOpen: boolean;
   onClose: () => void;
+  taskId: string;
 };
 
 type FormValues = {
@@ -36,41 +39,57 @@ const AddLabelForm: React.FC<Props> = ({ onClose, isDialogOpen }) => {
     isSubmitting,
     setFieldValue,
     values,
+    handleSubmit,
   } = useFormikContext<FormValues>();
 
   return (
-    <Dialog open={isDialogOpen} onClose={onClose}>
-      <DialogTitle>Add label</DialogTitle>
-      <DialogContent>
-        <Box minWidth="300px">
-          <Field name="name" placeholder="Label name" component={FormikInput} />
-          <Box marginTop="16px" display="flex" alignItems="center">
-            <LabelIcon style={{ color: values.color }} />
-            <Box marginLeft="8px">
-              <HuePicker
-                color={values.color}
-                onChangeComplete={(color) => setFieldValue("color", color.hex)}
-              />
+    <Form>
+      <Dialog open={isDialogOpen} onClose={onClose}>
+        <DialogTitle>Add label</DialogTitle>
+        <DialogContent>
+          <Box minWidth="300px">
+            <Field
+              name="name"
+              placeholder="Label name"
+              component={FormikInput}
+            />
+            <Box marginTop="16px" display="flex" alignItems="center">
+              <LabelIcon style={{ color: values.color }} />
+              <Box marginLeft="8px">
+                <HuePicker
+                  color={values.color}
+                  onChangeComplete={(color) =>
+                    setFieldValue("color", color.hex)
+                  }
+                />
+              </Box>
+              <ErrorMessage name="color" />
             </Box>
-            <ErrorMessage name="color" />
           </Box>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="default" disabled={isSubmitting}>
-          Cancel
-        </Button>
-        <Button onClick={onClose} color="primary" disabled={isSubmitting}>
-          Create
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="default" disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              handleSubmit();
+              onClose();
+            }}
+            color="primary"
+            disabled={isSubmitting}
+          >
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Form>
   );
 };
 
 export const AddLabelDialog: React.FC<Props> = (props) => {
   const [error, setError] = useState("");
-  // const { createTask } = useCreateTask();
+  const { createLabel } = useCreateLabel();
 
   const validate = (values: FormValues) => {
     const errors: Errors = {};
@@ -90,12 +109,12 @@ export const AddLabelDialog: React.FC<Props> = (props) => {
 
   const onSubmit = async (
     values: FormValues,
-    { setSubmitting }: FormikHelpers<FormValues>
+    { setSubmitting, resetForm }: FormikHelpers<FormValues>
   ) => {
     try {
       setError("");
-      // await createTask({ ...values, status: taskStatus });
-      // onClose();
+      createLabel(props.taskId, values);
+      resetForm();
     } catch (error) {
       if (typeof error.message === "string") {
         setError(error.message);
