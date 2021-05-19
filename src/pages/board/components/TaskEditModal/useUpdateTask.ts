@@ -33,6 +33,17 @@ export const useUpdateTask = () => {
       );
   };
 
+  const removeTask = async (taskId: string) => {
+    await firestoreDB
+      .collection("boards")
+      .doc(board!.id)
+      .update({
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
+        tasks: firebase.firestore.FieldValue.arrayRemove(taskId),
+      });
+    // .then(() => firestoreDB.collection("tasks").doc(taskId).delete());
+  };
+
   const addLabelToTask = async (taskId: string, label: string) => {
     const updatedValues: Partial<TaskType> = {
       labels: firebase.firestore.FieldValue.arrayUnion(label) as any,
@@ -75,5 +86,5 @@ export const useUpdateTask = () => {
       );
   };
 
-  return { updateTask, addLabelToTask, removeLabelFromTask };
+  return { updateTask, addLabelToTask, removeLabelFromTask, removeTask };
 };

@@ -13,6 +13,7 @@ import Modal from "react-modal";
 import styles from "./styles.module.css";
 import LabelOutlinedIcon from "@material-ui/icons/LabelOutlined";
 import LinkOutlinedIcon from "@material-ui/icons/LinkOutlined";
+import DeleteOutline from "@material-ui/icons/DeleteOutline";
 
 import { FormikInput } from "../../../../shared/FormikInput/FormikInput";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
@@ -28,7 +29,7 @@ type Props = {
   onClose: () => void;
 };
 
-type EditFormProps = Pick<Props, "itemId">;
+type EditFormProps = Pick<Props, "itemId" | "onClose">;
 
 type FormValues = {
   title: string;
@@ -52,14 +53,14 @@ const customStyles = {
   },
 };
 
-const EditCardForm: React.FC<EditFormProps> = ({ itemId }) => {
+const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
   const {
     isSubmitting,
     handleReset,
     handleSubmit,
   } = useFormikContext<FormValues>();
   const { board } = useBoard();
-  const { updateTask } = useUpdateTask();
+  const { updateTask, removeTask } = useUpdateTask();
   const item = board!.tasks.find((t) => t.id === itemId)!;
 
   const { removeLabelFromTask } = useUpdateTask();
@@ -129,6 +130,17 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId }) => {
                 onClick={() => setEditMode(true)}
               >
                 <EditOutlinedIcon />
+              </div>
+            </Tooltip>
+            <Tooltip title="Delete task" placement="top">
+              <div
+                className={styles["icon-button"]}
+                onClick={() => {
+                  removeTask(itemId);
+                  onClose();
+                }}
+              >
+                <DeleteOutline />
               </div>
             </Tooltip>
           </Box>
@@ -326,7 +338,7 @@ export const TaskEditModal: React.FC<Props> = ({ show, onClose, itemId }) => {
           onSubmit={onSubmit}
           enableReinitialize
         >
-          <EditCardForm itemId={itemId} />
+          <EditCardForm itemId={itemId} onClose={onClose} />
         </Formik>
       </Modal>
     </>
