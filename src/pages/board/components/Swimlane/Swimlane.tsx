@@ -34,7 +34,7 @@ export const Swimlane: React.FC<Props> = ({ onDrop, children, status }) => {
 
   return (
     <>
-      <div ref={drop} style={{ minHeight: 400 }}>
+      <div ref={drop} style={{ minHeight: 400, width: 240 }}>
         <Box
           className={styles.column}
           style={{ backgroundColor: isOver ? "#8d8faa52" : "" }}

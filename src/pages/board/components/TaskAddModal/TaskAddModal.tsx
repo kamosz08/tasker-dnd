@@ -1,4 +1,4 @@
-import { Box, Button } from "@material-ui/core";
+import { Box, Button, MenuItem, Select } from "@material-ui/core";
 import React, { useState } from "react";
 import Modal from "react-modal";
 import styles from "./styles.module.css";
@@ -6,7 +6,8 @@ import { Field, Form, Formik, FormikHelpers, useFormikContext } from "formik";
 import { FormikInput } from "../../../../shared/FormikInput/FormikInput";
 import { Notification } from "../../../../shared/Notification/Notification";
 import { useCreateTask } from "./useCreateTask";
-import { TaskStatus } from "../../../../types";
+import { SimpleUserType, TaskStatus } from "../../../../types";
+import { useBoard } from "../../../../contexts/BoardContext";
 
 type Props = {
   show: boolean;
@@ -17,6 +18,8 @@ type Props = {
 type FormValues = {
   title: string;
   description: string;
+  status: TaskStatus;
+  assignee: SimpleUserType | null;
 };
 
 type Errors = Partial<FormValues>;
@@ -38,7 +41,28 @@ const customStyles = {
 };
 
 const AddTaskForm: React.FC = () => {
-  const { isSubmitting } = useFormikContext<FormValues>();
+  const {
+    isSubmitting,
+    setFieldValue,
+    values,
+  } = useFormikContext<FormValues>();
+  const { board } = useBoard();
+
+  const boardStatuses = board!.statuses;
+  const boardParticipants = board!.participants || [];
+
+  const handleStatusChange = (statusName: string) => {
+    const newStatus = boardStatuses.find((s) => s.name === statusName)!;
+    setFieldValue("status", newStatus);
+  };
+  const handleAsigneeChange = (assigneeId: string | 1) => {
+    const newAssignee =
+      assigneeId === 1
+        ? null
+        : boardParticipants.find((user) => user.userId === assigneeId)!;
+
+    setFieldValue("assignee", newAssignee);
+  };
 
   return (
     <Form>
@@ -55,12 +79,47 @@ const AddTaskForm: React.FC = () => {
         </Box>
         <Box flex={1}>
           <div className={styles["info-card"]}>
-            {[1, 2, 3, 4, 5].map((item) => (
-              <React.Fragment key={item}>
-                <div className="left">left</div>
-                <div className="right">right</div>
-              </React.Fragment>
-            ))}
+            <>
+              <Box display="flex" alignItems="center" marginRight="32px">
+                status
+              </Box>
+              <div className="right">
+                <Select
+                  label={null}
+                  className={styles["link-select"]}
+                  value={values.status.name}
+                  onChange={(e) => handleStatusChange(e.target.value as string)}
+                >
+                  {boardStatuses.map((status) => (
+                    <MenuItem key={status.name} value={status.name}>
+                      {status.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+            </>
+            <>
+              <Box display="flex" alignItems="center" marginRight="32px">
+                assignee
+              </Box>
+              <div className="right">
+                <Select
+                  label={null}
+                  className={styles["link-select"]}
+                  value={values.assignee?.userId || 1}
+                  onChange={(e) =>
+                    handleAsigneeChange(e.target.value as string)
+                  }
+                >
+                  <MenuItem value={1}>Unassigned</MenuItem>
+                  {boardParticipants.map((user) => (
+                    <MenuItem key={user.userId} value={user.userId}>
+                      {user.displayName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+            </>
           </div>
         </Box>
       </Box>
@@ -105,13 +164,10 @@ export const TaskAddModal: React.FC<Props> = ({
     return errors;
   };
 
-  const onSubmit = async (
-    values: FormValues,
-    { setSubmitting }: FormikHelpers<FormValues>
-  ) => {
+  const onSubmit = async (values: FormValues, { setSubmitting }: any) => {
     try {
       setError("");
-      await createTask({ ...values, status: taskStatus });
+      await createTask({ ...values });
       onClose();
     } catch (error) {
       if (typeof error.message === "string") {
@@ -132,7 +188,12 @@ export const TaskAddModal: React.FC<Props> = ({
       />
       <Modal isOpen={show} onRequestClose={onClose} style={customStyles}>
         <Formik
-          initialValues={{ title: "", description: "" }}
+          initialValues={{
+            title: "",
+            description: "",
+            status: taskStatus,
+            assignee: null,
+          }}
           validate={validate}
           onSubmit={onSubmit}
         >

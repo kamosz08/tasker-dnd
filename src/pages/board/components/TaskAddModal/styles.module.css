@@ -17,16 +17,19 @@
   color: #3065b7;
 }
 
-.title {
-  font-size: 1.2rem;
+.link-select {
+  width: 110px;
+  color: #3065b7 !important;
 }
 
-.add-comment {
-  width: 90%;
-  margin-right: 16px;
-  margin-top: 16px;
+.link-select::after {
+  display: none;
 }
 
-.add-comment-button {
-  margin-top: 8px;
+.link-select::before {
+  display: none;
+}
+
+.link-select div:focus {
+  background-color: inherit;
 }

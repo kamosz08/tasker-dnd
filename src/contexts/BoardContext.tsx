@@ -2,15 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { firestoreDB } from "../firebase";
 import { BoardType, DataStatus, TaskType } from "../types";
 import { useParams } from "react-router";
-import firebase from "firebase/app";
 
 type Context = {
   board: BoardType | null;
   status: DataStatus;
-  updateTask: (
-    taskId: string,
-    valuesToUpdate: Partial<TaskType>
-  ) => Promise<void>;
   changeOrderOfTasks: (
     firstTaskId: string,
     secondTaskId: string
@@ -31,26 +26,26 @@ export const BoardProvider: React.FC = ({ children }) => {
     let isFirstRun = true;
     setStatus("loading");
 
-    const addTaskSubscription = (taskId: string, isNew = false) => {
+    const addTaskSubscription = (taskId: string) => {
       const unsubscribe = firestoreDB
         .collection("tasks")
         .doc(taskId)
         .onSnapshot((snapshot) => {
           const snaphotData = snapshot.data() as TaskType;
+          console.log("snaphot on: ", snaphotData);
 
-          if (isNew) {
-            setData((oldData) => ({
+          setData((oldData) => {
+            const isNew = !oldData?.tasks.find((t) => t.id === taskId);
+            return {
               ...oldData!,
-              tasks: [...oldData!.tasks, snaphotData],
-            }));
-          } else {
-            setData((oldData) => ({
-              ...oldData!,
-              tasks: oldData!.tasks.map((task) =>
-                task.id === snaphotData.id ? snaphotData : task
-              ),
-            }));
-          }
+              tasks: isNew
+                ? [...oldData!.tasks, snaphotData]
+                : oldData!.tasks.map((task) =>
+                    task.id === snaphotData.id ? snaphotData : task
+                  ),
+            };
+          });
+
           isFirstRun = false;
         });
       unsubscribeTasks.push({ id: taskId, unsubscribe });
@@ -89,8 +84,9 @@ export const BoardProvider: React.FC = ({ children }) => {
       const addedTasks = snapshotTasks.filter(
         (t) => !subscribedTasks.includes(t)
       );
+      console.log("addedTasks", addedTasks);
       addedTasks.forEach((taskId) => {
-        addTaskSubscription(taskId, true);
+        addTaskSubscription(taskId);
       });
 
       //find removed tasks and unsubscribe
@@ -123,8 +119,12 @@ export const BoardProvider: React.FC = ({ children }) => {
           const snaphotData = snapshot.data() as BoardSnapshotData;
 
           if (isFirstRun) {
+            console.log("its first run, initialFetchAndSubscribe");
+
             initialFetchAndSubscribe(snapshot.id, snaphotData);
           } else {
+            console.log("its not first run, manageTasksSubscriptions");
+
             manageTasksSubscriptions(snaphotData);
           }
         },
@@ -135,25 +135,12 @@ export const BoardProvider: React.FC = ({ children }) => {
       );
 
     return () => {
+      unsubscribeTasks.forEach((subscribedTask) => {
+        subscribedTask.unsubscribe();
+      });
       unsubscribeBoard();
     };
   }, [boardId]);
-
-  const updateTask = (taskId: string, valuesToUpdate: Partial<TaskType>) => {
-    // return firestoreDB.collection("tasks").doc(taskId).update(valuesToUpdate);
-    return firestoreDB
-      .collection("tasks")
-      .doc(taskId)
-      .update(valuesToUpdate)
-      .then(() =>
-        firestoreDB
-          .collection("boards")
-          .doc(boardId)
-          .update({
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
-          })
-      );
-  };
 
   const changeOrderOfTasks = (firstTaskId: string, secondTaskId: string) => {
     const currentTasksIds = data!.tasks.map((t) => t.id);
@@ -178,7 +165,6 @@ export const BoardProvider: React.FC = ({ children }) => {
   const contextValue = {
     board: data,
     status,
-    updateTask,
     changeOrderOfTasks,
   };
 

@@ -9,14 +9,23 @@ import {
   Divider,
   Typography,
 } from "@material-ui/core";
-import { useUserBoards } from "./useUserBoards";
+import { BoardTypeWithoutTaskPull, useUserBoards } from "./useUserBoards";
 import styles from "./styles.module.css";
 import { NewBoard } from "../new-board/NewBoard";
 import Alert from "@material-ui/lab/Alert";
-import { BoardType } from "../../types";
+import { useAuth } from "../../contexts/AuthContext";
+import { formatDistance } from "date-fns";
 
-const BoardCard: React.FC<{ board: BoardType }> = ({ board }) => {
+const BoardCard: React.FC<{
+  board: BoardTypeWithoutTaskPull;
+  deleteBoard: (
+    boardId: string,
+    participantsIds: string[],
+    tasksIds: string[]
+  ) => Promise<void>;
+}> = ({ board, deleteBoard }) => {
   const { push } = useHistory();
+  const { user } = useAuth();
 
   const goToBoard = (id: string) => () => {
     push(`/boards/${id}`);
@@ -39,12 +48,22 @@ const BoardCard: React.FC<{ board: BoardType }> = ({ board }) => {
           </Typography>
         </Box>
         <Box>
-          <Typography color="textSecondary" variant="body2" align="right">
-            Created at: {board.createdAt.toDate().toDateString()}
-          </Typography>
-          <Typography color="textSecondary" variant="body2" align="right">
-            Last updated: {board.lastUpdated.toDate().toDateString()}
-          </Typography>
+          {board.createdAt && (
+            <Typography color="textSecondary" variant="body2" align="right">
+              Created:{" "}
+              {formatDistance(board.createdAt.toDate(), Date.now(), {
+                addSuffix: true,
+              })}
+            </Typography>
+          )}
+          {board.lastUpdated && (
+            <Typography color="textSecondary" variant="body2" align="right">
+              Last updated:{" "}
+              {formatDistance(board.lastUpdated.toDate(), Date.now(), {
+                addSuffix: true,
+              })}
+            </Typography>
+          )}
         </Box>
       </Box>
       <Box marginTop="8px" marginBottom="8px">
@@ -55,6 +74,20 @@ const BoardCard: React.FC<{ board: BoardType }> = ({ board }) => {
         <Chip label={`${board.participants.length} users`} variant="outlined" />
       </Box>
       <Box display="flex" justifyContent="flex-end">
+        {user?.id === board.createdBy.userId && (
+          <Button
+            color="secondary"
+            onClick={() =>
+              deleteBoard(
+                board.id,
+                board.participants.map((p) => p.userId),
+                board.tasks
+              )
+            }
+          >
+            Delete
+          </Button>
+        )}
         <Button color="primary" onClick={goToBoard(board.id)}>
           Open
         </Button>
@@ -64,7 +97,7 @@ const BoardCard: React.FC<{ board: BoardType }> = ({ board }) => {
 };
 
 const Boards: React.FC = () => {
-  const { status, data } = useUserBoards();
+  const { status, data, deleteBoard } = useUserBoards();
 
   if (status === "idle" || status === "loading")
     return (
@@ -84,7 +117,7 @@ const Boards: React.FC = () => {
   return (
     <Box marginTop="32px">
       {data.map((board) => (
-        <BoardCard key={board.id} board={board} />
+        <BoardCard key={board.id} board={board} deleteBoard={deleteBoard} />
       ))}
     </Box>
   );

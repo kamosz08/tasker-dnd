@@ -78,8 +78,8 @@ export const Task: React.FC<Props> = ({
         className={styles.card}
         onDoubleClick={() => openEditModal()}
       >
-        <p>{item.title}</p>
-        <p>{item.description}</p>
+        <p className={styles.title}>{item.title}</p>
+        <p className={styles.description}>{item.description}</p>
       </div>
     </>
   );

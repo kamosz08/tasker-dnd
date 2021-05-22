@@ -12,25 +12,24 @@ export const useUpdateTask = () => {
   const { user } = useAuth();
   const { board } = useBoard();
 
-  const updateTask = async (taskId: string, values: FormValues) => {
+  const updateTask = (taskId: string, values: FormValues) => {
+    const updateTaskBatch = firestoreDB.batch();
+
     const updatedValues: Partial<TaskType> = {
       ...values,
       updatedBy: { userId: user!.id, displayName: user!.displayName },
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
     };
 
-    await firestoreDB
-      .collection("tasks")
-      .doc(taskId)
-      .update(updatedValues)
-      .then(() =>
-        firestoreDB
-          .collection("boards")
-          .doc(board!.id)
-          .update({
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
-          })
-      );
+    const taskRef = firestoreDB.collection("tasks").doc(taskId);
+    updateTaskBatch.update(taskRef, updatedValues);
+
+    const boardRef = firestoreDB.collection("boards").doc(board!.id);
+    updateTaskBatch.update(boardRef, {
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
+    });
+
+    return updateTaskBatch.commit();
   };
 
   const removeTask = async (taskId: string) => {

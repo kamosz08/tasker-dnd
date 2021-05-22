@@ -4,7 +4,10 @@ import firebase from "firebase/app";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { useBoard } from "../../../../contexts/BoardContext";
 
-type FormValues = Pick<TaskType, "description" | "title" | "status">;
+type FormValues = Pick<
+  TaskType,
+  "description" | "title" | "status" | "assignee"
+>;
 
 export const useCreateTask = () => {
   const { user } = useAuth();
@@ -23,7 +26,7 @@ export const useCreateTask = () => {
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
       updatedBy: { userId: user!.id, displayName: user!.displayName },
       labels: [],
-      assignee: null,
+      assignee: values.assignee || null,
     };
 
     await newTaskRef.set(newTask).then(() =>

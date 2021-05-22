@@ -7,11 +7,13 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { Box, CircularProgress } from "@material-ui/core";
 import { BoardProvider, useBoard } from "../../contexts/BoardContext";
 import { TaskEditModal } from "./components/TaskEditModal/TaskEditModal";
+import { useUpdateTask } from "./components/TaskEditModal/useUpdateTask";
 
 const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
   openEditModal,
 }) => {
-  const { board, status, updateTask, changeOrderOfTasks } = useBoard();
+  const { board, status, changeOrderOfTasks } = useBoard();
+  const { updateTask } = useUpdateTask();
   const statuses = board?.statuses || [];
   const [items, setItems] = useState(board?.tasks || []);
 

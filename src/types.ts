@@ -6,26 +6,19 @@ export type UserType = {
   displayName: string;
 };
 
+export type SimpleUserType = { userId: string; displayName: string };
+
 export type TaskType = {
   id: string;
   title: string;
   description: string;
   status: TaskStatus;
-  createdBy: {
-    userId: string;
-    displayName: string;
-  };
+  createdBy: SimpleUserType;
   createdAt: firebase.firestore.Timestamp;
   lastUpdated: firebase.firestore.Timestamp;
-  updatedBy: {
-    userId: string;
-    displayName: string;
-  };
+  updatedBy: SimpleUserType;
   labels: string[];
-  assignee: {
-    userId: string;
-    displayName: string;
-  } | null;
+  assignee: SimpleUserType | null;
 };
 
 export type TaskStatus = {
@@ -47,13 +40,7 @@ export type BoardType = {
   statuses: TaskStatus[];
   createdAt: firebase.firestore.Timestamp;
   lastUpdated: firebase.firestore.Timestamp;
-  createdBy: {
-    userId: string;
-    displayName: string;
-  };
-  participants: {
-    userId: string;
-    displayName: string;
-  }[];
+  createdBy: SimpleUserType;
+  participants: SimpleUserType[];
   labels: { name: string; color: string }[];
 };
