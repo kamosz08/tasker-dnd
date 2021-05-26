@@ -18,17 +18,48 @@ export const Task: React.FC<Props> = ({
   openEditModal,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const isHovered = useRef<boolean>(false);
   const statusColor =
     statuses.find((s) => s.name === item.status.name)?.color || "blue";
 
   const [, drop] = useDrop({
     accept: CARD_TYPE,
-    hover(draggedItem: DragableTaskType) {
+    // hover(draggedItem: DragableTaskType) {
+    //   if (!ref.current) {
+    //     return;
+    //   }
+
+    //   const dragIndex = draggedItem.index;
+    //   const hoverIndex = index;
+
+    //   if (dragIndex === hoverIndex) {
+    //     return;
+    //   }
+
+    //   // const hoveredRect = ref.current.getBoundingClientRect();
+    //   // const hoverMiddleY = (hoveredRect.bottom - hoveredRect.top) / 2;
+    //   // const mousePosition = monitor.getClientOffset();
+    //   // const hoverClientY = mousePosition!.y - hoveredRect.top;
+
+    //   // if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+    //   //   return;
+    //   // }
+
+    //   // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+    //   //   return;
+    //   // }
+    //   isHovered.current = true;
+    //   console.log(dragIndex, hoverIndex);
+
+    //   changeOrderOfItems(dragIndex, hoverIndex);
+    //   // draggedItem.index = hoverIndex;
+    // },
+    drop(itemIsBeingDroppedOn: DragableTaskType) {
       if (!ref.current) {
         return;
       }
 
-      const dragIndex = draggedItem.index;
+      const dragIndex = itemIsBeingDroppedOn.index;
       const hoverIndex = index;
 
       if (dragIndex === hoverIndex) {
@@ -47,8 +78,10 @@ export const Task: React.FC<Props> = ({
       // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
       //   return;
       // }
+      isHovered.current = true;
+      console.log(dragIndex, hoverIndex);
+
       changeOrderOfItems(dragIndex, hoverIndex);
-      draggedItem.index = hoverIndex;
     },
   });
 
@@ -66,6 +99,7 @@ export const Task: React.FC<Props> = ({
   };
 
   attachRef();
+  console.log(isHovered.current);
 
   return (
     <>

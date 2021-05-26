@@ -8,6 +8,7 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { BoardProvider, useBoard } from "../../contexts/BoardContext";
 import { TaskEditModal } from "./components/TaskEditModal/TaskEditModal";
 import { useUpdateTask } from "./components/TaskEditModal/useUpdateTask";
+import { TaskStatus } from "../../types";
 
 const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
   openEditModal,
@@ -16,6 +17,7 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
   const { updateTask } = useUpdateTask();
   const statuses = board?.statuses || [];
   const [items, setItems] = useState(board?.tasks || []);
+  console.log(items);
 
   useEffect(() => {
     if (board?.tasks) setItems(board?.tasks);
@@ -32,8 +34,17 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
     }
   };
 
-  const changeOrderOfItems = (dragIndex: number, hoverIndex: number) => {
-    changeOrderOfTasks(items[dragIndex].id, items[hoverIndex].id);
+  const changeOrderOfItems = (statusName: TaskStatus["name"]) => (
+    dragIndex: number,
+    hoverIndex: number
+  ) => {
+    const itemsWithThisStatus = items.filter(
+      (i) => i.status.name === statusName
+    );
+    changeOrderOfTasks(
+      itemsWithThisStatus[dragIndex].id,
+      itemsWithThisStatus[hoverIndex].id
+    );
   };
 
   if (status === "idle" || status === "loading")
@@ -61,7 +72,7 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
                       key={i.id}
                       item={i}
                       index={idx}
-                      changeOrderOfItems={changeOrderOfItems}
+                      changeOrderOfItems={changeOrderOfItems(s.name)}
                       openEditModal={() => openEditModal(i.id)}
                     />
                   ))}

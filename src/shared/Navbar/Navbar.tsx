@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 import styles from "./styles.module.css";
-import logo from "./logo_text.png";
+import logo from "./logo_text_2.png";
 import { Box, Button } from "@material-ui/core";
 
 const PATHS_WITHOUT_NAVBAR = ["/signup", "/login", "/reset-password"];

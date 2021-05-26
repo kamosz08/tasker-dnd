@@ -144,6 +144,7 @@ export const BoardProvider: React.FC = ({ children }) => {
 
   const changeOrderOfTasks = (firstTaskId: string, secondTaskId: string) => {
     const currentTasksIds = data!.tasks.map((t) => t.id);
+    console.log(firstTaskId, secondTaskId);
 
     const firstIndex = currentTasksIds.indexOf(firstTaskId);
     const secondIndex = currentTasksIds.indexOf(secondTaskId);
@@ -151,10 +152,14 @@ export const BoardProvider: React.FC = ({ children }) => {
     currentTasksIds[firstIndex] = secondTaskId;
     currentTasksIds[secondIndex] = firstTaskId;
 
+    console.log(data!.tasks);
+
     const tasksWithNewOrder = data!.tasks;
     const temp = tasksWithNewOrder[firstIndex];
     tasksWithNewOrder[firstIndex] = tasksWithNewOrder[secondIndex];
     tasksWithNewOrder[secondIndex] = temp;
+    console.log(tasksWithNewOrder);
+
     setData((oldData) => ({ ...oldData!, tasks: tasksWithNewOrder }));
     return firestoreDB
       .collection("boards")
