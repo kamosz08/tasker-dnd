@@ -1,8 +1,8 @@
 import firebase from "firebase/app";
-import { BoardType } from "../../types";
-import { useAuth } from "../../contexts/AuthContext";
-import { statuses } from "../../consts";
-import { firestoreDB } from "../../firebase";
+import { statuses } from "../../../../consts";
+import { useAuth } from "../../../../contexts/AuthContext";
+import { firestoreDB } from "../../../../firebase";
+import { BoardType } from "../../../../types";
 
 type FormValues = {
   name: string;
