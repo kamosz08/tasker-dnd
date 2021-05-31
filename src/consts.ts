@@ -2,21 +2,21 @@ import { TaskStatus } from "./types";
 
 export const CARD_TYPE = "CARD";
 
-export const statuses: TaskStatus[] = [
+export const defaultStatuses: TaskStatus[] = [
   {
-    name: "to do",
+    name: "To do",
     color: "#EB5A46",
   },
   {
-    name: "open",
+    name: "Open",
     color: "#00C2E0",
   },
   {
-    name: "in progress",
+    name: "In progress",
     color: "#efd93b",
   },
   {
-    name: "done",
+    name: "Done",
     color: "#74b132",
   },
 ];

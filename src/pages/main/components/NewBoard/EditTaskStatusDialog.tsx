@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   ErrorMessage,
   Field,
@@ -14,16 +14,17 @@ import {
   Button,
   Box,
 } from "@material-ui/core";
-import { Notification } from "../../../../shared/Notification/Notification";
 import { FormikInput } from "../../../../shared/FormikInput/FormikInput";
 import { HuePicker } from "react-color";
-import LabelIcon from "@material-ui/icons/Label";
-import { useCreateLabel } from "./useCreateLabel";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import { TaskStatus } from "../../../../types";
 
 type Props = {
   isDialogOpen: boolean;
   onClose: () => void;
-  taskId: string;
+  onSubmit: (newTask: TaskStatus) => void;
+  value: TaskStatus;
+  existingStatuses: TaskStatus[];
 };
 
 type FormValues = {
@@ -33,7 +34,7 @@ type FormValues = {
 
 type Errors = Partial<FormValues>;
 
-const AddLabelForm: React.FC<Props> = ({ onClose, isDialogOpen }) => {
+const EditTaskStatusForm: React.FC<Props> = ({ onClose, isDialogOpen }) => {
   const {
     isSubmitting,
     setFieldValue,
@@ -43,12 +44,16 @@ const AddLabelForm: React.FC<Props> = ({ onClose, isDialogOpen }) => {
 
   return (
     <Dialog open={isDialogOpen} onClose={onClose}>
-      <DialogTitle>Add label</DialogTitle>
+      <DialogTitle>Edit task status</DialogTitle>
       <DialogContent>
         <Box minWidth="300px">
-          <Field name="name" placeholder="Label name" component={FormikInput} />
+          <Field
+            name="name"
+            placeholder="Status name"
+            component={FormikInput}
+          />
           <Box marginTop="16px" display="flex" alignItems="center">
-            <LabelIcon style={{ color: values.color }} />
+            <FiberManualRecordIcon style={{ color: values.color }} />
             <Box marginLeft="8px">
               <HuePicker
                 color={values.color}
@@ -66,22 +71,18 @@ const AddLabelForm: React.FC<Props> = ({ onClose, isDialogOpen }) => {
         <Button
           onClick={() => {
             handleSubmit();
-            onClose();
           }}
           color="primary"
           disabled={isSubmitting}
         >
-          Create
+          Save
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export const AddLabelDialog: React.FC<Props> = (props) => {
-  const [error, setError] = useState("");
-  const { createLabel } = useCreateLabel();
-
+export const EditTaskStatusDialog: React.FC<Props> = (props) => {
   const validate = (values: FormValues) => {
     const errors: Errors = {};
     if (!values.name) {
@@ -90,6 +91,10 @@ export const AddLabelDialog: React.FC<Props> = (props) => {
       errors.name = "Minimum title length is 3";
     } else if (values.name.length > 16) {
       errors.name = "Maximum title length is 16";
+    } else if (
+      props.existingStatuses.map((s) => s.name).includes(values.name)
+    ) {
+      errors.name = "Status name must be unique";
     }
 
     if (!values.color) {
@@ -102,33 +107,21 @@ export const AddLabelDialog: React.FC<Props> = (props) => {
     values: FormValues,
     { setSubmitting, resetForm }: FormikHelpers<FormValues>
   ) => {
-    try {
-      setError("");
-      createLabel(props.taskId, values);
-      resetForm();
-    } catch (error) {
-      if (typeof error.message === "string") {
-        setError(error.message);
-      } else {
-        setError("Failed to create a label");
-      }
-    }
+    props.onSubmit(values);
+    resetForm();
     setSubmitting(false);
+    props.onClose();
   };
 
   return (
     <>
-      <Notification
-        handleClose={() => setError("")}
-        severity="error"
-        message={error}
-      />
       <Formik
-        initialValues={{ name: "", color: "#008cffa" }}
+        initialValues={{ name: props.value.name, color: props.value.color }}
         validate={validate}
         onSubmit={onSubmit}
+        enableReinitialize
       >
-        <AddLabelForm {...props} />
+        <EditTaskStatusForm {...props} />
       </Formik>
     </>
   );

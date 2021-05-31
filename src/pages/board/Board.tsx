@@ -4,11 +4,12 @@ import { DropFunction, Swimlane } from "./components/Swimlane/Swimlane";
 import styles from "./styles.module.css";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Box, CircularProgress } from "@material-ui/core";
+import { Box, CircularProgress, Typography } from "@material-ui/core";
 import { BoardProvider, useBoard } from "../../contexts/BoardContext";
 import { TaskEditModal } from "./components/TaskEditModal/TaskEditModal";
 import { useUpdateTask } from "./components/TaskEditModal/useUpdateTask";
 import { TaskStatus } from "../../types";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 
 const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
   openEditModal,
@@ -63,7 +64,14 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
         {statuses.map((s) => {
           return (
             <div key={s.name} className={styles.column}>
-              <p className={styles["column-header"]}>{s.name}</p>
+              <Box
+                display="flex"
+                justifyContent="center"
+                className={styles["column-header"]}
+              >
+                <FiberManualRecordIcon style={{ color: s.color }} />
+                <Typography>{s.name}</Typography>
+              </Box>
               <Swimlane onDrop={onDrop} status={s}>
                 {items
                   .filter((i) => i.status.name === s.name)

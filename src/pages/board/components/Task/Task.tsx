@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { CARD_TYPE, statuses } from "../../../../consts";
+import { CARD_TYPE } from "../../../../consts";
+import { useBoard } from "../../../../contexts/BoardContext";
 import { TaskType, DragableTaskType } from "../../../../types";
 import styles from "./styles.module.css";
 
@@ -17,10 +18,12 @@ export const Task: React.FC<Props> = ({
   changeOrderOfItems,
   openEditModal,
 }) => {
+  const { board } = useBoard();
+
   const ref = useRef<HTMLDivElement>(null);
   const isHovered = useRef<boolean>(false);
   const statusColor =
-    statuses.find((s) => s.name === item.status.name)?.color || "blue";
+    board!.statuses.find((s) => s.name === item.status.name)?.color || "blue";
 
   const [, drop] = useDrop({
     accept: CARD_TYPE,

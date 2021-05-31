@@ -5,6 +5,12 @@ import { FormikInput } from "../../../../shared/FormikInput/FormikInput";
 import Alert from "@material-ui/lab/Alert";
 import { useCreateBoard } from "./useCreateBoard";
 import Modal from "react-modal";
+import { TaskStatus } from "../../../../types";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import { defaultStatuses } from "../../../../consts";
+import { EditTaskStatusDialog } from "./EditTaskStatusDialog";
+import EditIcon from "@material-ui/icons/Edit";
+import styles from "./styles.module.css";
 
 Modal.setAppElement("#root");
 
@@ -27,14 +33,59 @@ type ContainerProps = {
   onClose: () => void;
 };
 
+type TaskStatusComponentProps = {
+  value: TaskStatus;
+};
+
 type FormValues = {
   name: string;
   description: string;
+  statuses: TaskStatus[];
 };
 
 type Errors = Partial<FormValues>;
+
+const TaskStatusComponent: React.FC<TaskStatusComponentProps> = ({ value }) => {
+  const { setFieldValue, values } = useFormikContext<FormValues>();
+
+  const { color, name } = value;
+  const [isEdit, setEdit] = useState(false);
+
+  const handleClose = () => {
+    setEdit(false);
+  };
+
+  const handleEdit = () => {
+    setEdit(true);
+  };
+
+  const handleSubmit = (newTaskStatus: TaskStatus) => {
+    setFieldValue(
+      "statuses",
+      values.statuses.map((s) => (s.name === name ? newTaskStatus : s))
+    );
+  };
+
+  return (
+    <Box minWidth="100px">
+      <Box marginTop="8px" display="flex" alignItems="center">
+        <FiberManualRecordIcon style={{ color }} />
+        <Typography>{name}</Typography>
+        <EditIcon className={styles["edit-icon"]} onClick={handleEdit} />
+      </Box>
+      <EditTaskStatusDialog
+        isDialogOpen={isEdit}
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+        value={value}
+        existingStatuses={values.statuses}
+      />
+    </Box>
+  );
+};
+
 const NewBoardForm: React.FC = () => {
-  const { isSubmitting } = useFormikContext<FormValues>();
+  const { isSubmitting, values } = useFormikContext<FormValues>();
 
   return (
     <Form>
@@ -46,6 +97,14 @@ const NewBoardForm: React.FC = () => {
         rows={3}
         component={FormikInput}
       />
+      <Box marginTop="16px">
+        <Typography>Task statuses:</Typography>
+      </Box>
+      <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+        {values.statuses.map((status) => (
+          <TaskStatusComponent key={status.name} value={status} />
+        ))}
+      </Box>
       <Box
         marginTop="16px"
         marginBottom="16px"
@@ -120,7 +179,11 @@ export const NewBoard: React.FC<ContainerProps> = ({ show, onClose }) => {
           </Box>
           {!!error && <Alert severity="error">{error}</Alert>}
           <Formik
-            initialValues={{ name: "", description: "" }}
+            initialValues={{
+              name: "",
+              description: "",
+              statuses: defaultStatuses,
+            }}
             validate={validate}
             onSubmit={onSubmit}
           >

@@ -1,12 +1,12 @@
 import firebase from "firebase/app";
-import { statuses } from "../../../../consts";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { firestoreDB } from "../../../../firebase";
-import { BoardType } from "../../../../types";
+import { BoardType, TaskStatus } from "../../../../types";
 
 type FormValues = {
   name: string;
   description: string;
+  statuses: TaskStatus[];
 };
 
 export const useCreateBoard = () => {
@@ -17,7 +17,7 @@ export const useCreateBoard = () => {
     const newBoard: BoardType = {
       id: newBoardRef.id,
       tasks: [],
-      statuses: statuses,
+      statuses: values.statuses,
       name: values.name,
       description: values.description,
       createdAt: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
