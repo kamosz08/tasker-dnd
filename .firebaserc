@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "tasker-dnd",
+    "tasker": "tasker-dnd"
+  }
+}
