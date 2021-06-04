@@ -27,8 +27,15 @@ export const AuthProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
-      const dbUser = await firestoreDB.collection("users").doc(user?.uid).get();
-      setCurrentUser(dbUser.data() as UserType);
+      if (user) {
+        const dbUser = await firestoreDB
+          .collection("users")
+          .doc(user?.uid)
+          .get();
+        setCurrentUser(dbUser.data() as UserType);
+      } else {
+        setCurrentUser(null);
+      }
       setLoaded(true);
     });
     return () => {

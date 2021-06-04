@@ -167,7 +167,7 @@ export const TaskAddModal: React.FC<Props> = ({
   const onSubmit = async (values: FormValues, { setSubmitting }: any) => {
     try {
       setError("");
-      await createTask({ ...values });
+      createTask({ ...values });
       onClose();
     } catch (error) {
       if (typeof error.message === "string") {

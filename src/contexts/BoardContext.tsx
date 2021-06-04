@@ -32,7 +32,6 @@ export const BoardProvider: React.FC = ({ children }) => {
         .doc(taskId)
         .onSnapshot((snapshot) => {
           const snaphotData = snapshot.data() as TaskType;
-          console.log("snaphot on: ", snaphotData);
 
           setData((oldData) => {
             const isNew = !oldData?.tasks.find((t) => t.id === taskId);
@@ -84,7 +83,6 @@ export const BoardProvider: React.FC = ({ children }) => {
       const addedTasks = snapshotTasks.filter(
         (t) => !subscribedTasks.includes(t)
       );
-      console.log("addedTasks", addedTasks);
       addedTasks.forEach((taskId) => {
         addTaskSubscription(taskId);
       });
@@ -119,12 +117,8 @@ export const BoardProvider: React.FC = ({ children }) => {
           const snaphotData = snapshot.data() as BoardSnapshotData;
 
           if (isFirstRun) {
-            console.log("its first run, initialFetchAndSubscribe");
-
             initialFetchAndSubscribe(snapshot.id, snaphotData);
           } else {
-            console.log("its not first run, manageTasksSubscriptions");
-
             manageTasksSubscriptions(snaphotData);
           }
         },
@@ -144,7 +138,6 @@ export const BoardProvider: React.FC = ({ children }) => {
 
   const changeOrderOfTasks = (firstTaskId: string, secondTaskId: string) => {
     const currentTasksIds = data!.tasks.map((t) => t.id);
-    console.log(firstTaskId, secondTaskId);
 
     const firstIndex = currentTasksIds.indexOf(firstTaskId);
     const secondIndex = currentTasksIds.indexOf(secondTaskId);
@@ -152,13 +145,10 @@ export const BoardProvider: React.FC = ({ children }) => {
     currentTasksIds[firstIndex] = secondTaskId;
     currentTasksIds[secondIndex] = firstTaskId;
 
-    console.log(data!.tasks);
-
     const tasksWithNewOrder = data!.tasks;
     const temp = tasksWithNewOrder[firstIndex];
     tasksWithNewOrder[firstIndex] = tasksWithNewOrder[secondIndex];
     tasksWithNewOrder[secondIndex] = temp;
-    console.log(tasksWithNewOrder);
 
     setData((oldData) => ({ ...oldData!, tasks: tasksWithNewOrder }));
     return firestoreDB

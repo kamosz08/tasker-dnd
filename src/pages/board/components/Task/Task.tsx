@@ -52,7 +52,6 @@ export const Task: React.FC<Props> = ({
     //   //   return;
     //   // }
     //   isHovered.current = true;
-    //   console.log(dragIndex, hoverIndex);
 
     //   changeOrderOfItems(dragIndex, hoverIndex);
     //   // draggedItem.index = hoverIndex;
@@ -82,7 +81,6 @@ export const Task: React.FC<Props> = ({
       //   return;
       // }
       isHovered.current = true;
-      console.log(dragIndex, hoverIndex);
 
       changeOrderOfItems(dragIndex, hoverIndex);
     },
@@ -102,7 +100,6 @@ export const Task: React.FC<Props> = ({
   };
 
   attachRef();
-  console.log(isHovered.current);
 
   return (
     <>

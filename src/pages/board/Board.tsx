@@ -18,7 +18,6 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
   const { updateTask } = useUpdateTask();
   const statuses = board?.statuses || [];
   const [items, setItems] = useState(board?.tasks || []);
-  console.log(items);
 
   useEffect(() => {
     if (board?.tasks) setItems(board?.tasks);
@@ -59,36 +58,42 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
     return <p>There was an error while fetching board</p>;
   return (
     <DndProvider backend={HTML5Backend}>
-      <h3 className={styles["header"]}>{board.name}</h3>
-      <div className={styles["main-wrapper"]}>
-        {statuses.map((s) => {
-          return (
-            <div key={s.name} className={styles.column}>
-              <Box
-                display="flex"
-                justifyContent="center"
-                className={styles["column-header"]}
-              >
-                <FiberManualRecordIcon style={{ color: s.color }} />
-                <Typography>{s.name}</Typography>
-              </Box>
-              <Swimlane onDrop={onDrop} status={s}>
-                {items
-                  .filter((i) => i.status.name === s.name)
-                  .map((i, idx) => (
-                    <Task
-                      key={i.id}
-                      item={i}
-                      index={idx}
-                      changeOrderOfItems={changeOrderOfItems(s.name)}
-                      openEditModal={() => openEditModal(i.id)}
-                    />
-                  ))}
-              </Swimlane>
-            </div>
-          );
-        })}
-      </div>
+      {/* <h3 className={styles["header"]}>{board.name}</h3> */}
+      <Box marginLeft="auto" marginRight="auto" maxWidth="960px">
+        <Box display="flex" marginTop="32px" marginBottom="32px">
+          <Typography color="textSecondary">Board name:</Typography>
+          <Typography>{board.name}</Typography>
+        </Box>
+        <div className={styles["main-wrapper"]}>
+          {statuses.map((s) => {
+            return (
+              <div key={s.name} className={styles.column}>
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  className={styles["column-header"]}
+                >
+                  <FiberManualRecordIcon style={{ color: s.color }} />
+                  <Typography>{s.name}</Typography>
+                </Box>
+                <Swimlane onDrop={onDrop} status={s}>
+                  {items
+                    .filter((i) => i.status.name === s.name)
+                    .map((i, idx) => (
+                      <Task
+                        key={i.id}
+                        item={i}
+                        index={idx}
+                        changeOrderOfItems={changeOrderOfItems(s.name)}
+                        openEditModal={() => openEditModal(i.id)}
+                      />
+                    ))}
+                </Swimlane>
+              </div>
+            );
+          })}
+        </div>
+      </Box>
     </DndProvider>
   );
 };

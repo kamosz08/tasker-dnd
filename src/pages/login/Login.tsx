@@ -73,7 +73,6 @@ export const Login: React.FC = () => {
     try {
       setError("");
       await logIn(values.email, values.password);
-      push("/");
     } catch (error) {
       if (typeof error.message === "string") {
         setError(error.message);
