@@ -27,12 +27,6 @@ export const Boards: React.FC = () => {
     );
   if (status === "error")
     return <p>There was an error while fetching boards</p>;
-  if (data.length === 0)
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center">
-        <Alert severity="info">You don&apos;t have any boards yet</Alert>
-      </Box>
-    );
   return (
     <>
       <NewBoard show={showModal} onClose={closeAddBoardModal} />
@@ -50,11 +44,21 @@ export const Boards: React.FC = () => {
             Add board
           </Button>
         </Box>
-        <Box display="flex" justifyContent="space-between" flexWrap="wrap">
-          {data.map((board) => (
-            <BoardCard key={board.id} board={board} deleteBoard={deleteBoard} />
-          ))}
-        </Box>
+        {data.length === 0 ? (
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <Alert severity="info">You don&apos;t have any boards yet</Alert>
+          </Box>
+        ) : (
+          <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+            {data.map((board) => (
+              <BoardCard
+                key={board.id}
+                board={board}
+                deleteBoard={deleteBoard}
+              />
+            ))}
+          </Box>
+        )}
       </Box>
     </>
   );
