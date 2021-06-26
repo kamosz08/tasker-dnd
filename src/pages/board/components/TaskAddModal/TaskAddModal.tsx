@@ -2,7 +2,7 @@ import { Box, Button, MenuItem, Select } from "@material-ui/core";
 import React, { useState } from "react";
 import Modal from "react-modal";
 import styles from "./styles.module.css";
-import { Field, Form, Formik, FormikHelpers, useFormikContext } from "formik";
+import { Field, Form, Formik, useFormikContext } from "formik";
 import { FormikInput } from "../../../../shared/FormikInput/FormikInput";
 import { Notification } from "../../../../shared/Notification/Notification";
 import { useCreateTask } from "./useCreateTask";

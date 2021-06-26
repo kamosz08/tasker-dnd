@@ -59,6 +59,7 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
     handleReset,
     handleSubmit,
   } = useFormikContext<FormValues>();
+
   const { board } = useBoard();
   const { updateTask, removeTask } = useUpdateTask();
   const item = board!.tasks.find((t) => t.id === itemId)!;
@@ -197,7 +198,9 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
             />
           ) : (
             <Box minHeight="114px">
-              <Typography>{item.description}</Typography>
+              <pre>
+                <Typography>{item.description}</Typography>
+              </pre>
             </Box>
           )}
         </Box>
