@@ -22,7 +22,7 @@ export const BoardProvider: React.FC = ({ children }) => {
   const { id: boardId } = useParams<{ id: string }>();
 
   useEffect(() => {
-    let unsubscribeTasks: { id: string; unsubscribe: () => void }[] = [];
+    let subscribedTasks: { id: string; unsubscribe: () => void }[] = [];
     let isFirstRun = true;
     setStatus("loading");
 
@@ -47,7 +47,7 @@ export const BoardProvider: React.FC = ({ children }) => {
 
           isFirstRun = false;
         });
-      unsubscribeTasks.push({ id: taskId, unsubscribe });
+      subscribedTasks.push({ id: taskId, unsubscribe });
     };
 
     const initialFetchAndSubscribe = async (
@@ -77,34 +77,35 @@ export const BoardProvider: React.FC = ({ children }) => {
 
     const manageTasksSubscriptions = async (snaphotData: BoardSnapshotData) => {
       const snapshotTasks = snaphotData.tasks;
-      const subscribedTasks = unsubscribeTasks.map((item) => item.id);
+      const subscribedTasksIds = subscribedTasks.map((item) => item.id);
 
       //find new tasks and subscribe
       const addedTasks = snapshotTasks.filter(
-        (t) => !subscribedTasks.includes(t)
+        (t) => !subscribedTasksIds.includes(t)
       );
       addedTasks.forEach((taskId) => {
         addTaskSubscription(taskId);
       });
 
       //find removed tasks and unsubscribe
-      const removedTasks = subscribedTasks.filter(
+      const removedTasks = subscribedTasksIds.filter(
         (t) => !snapshotTasks.includes(t)
       );
 
       setData((oldData) => ({
         ...oldData!,
+        ...snaphotData,
         tasks: oldData!.tasks.filter((item) => !removedTasks.includes(item.id)),
       }));
 
-      unsubscribeTasks
+      subscribedTasks
         .filter((item) => removedTasks.includes(item.id))
         .forEach((subscribedTask) => {
           subscribedTask.unsubscribe();
           firestoreDB.collection("tasks").doc(subscribedTask.id).delete();
         });
 
-      unsubscribeTasks = unsubscribeTasks.filter(
+      subscribedTasks = subscribedTasks.filter(
         (item) => !removedTasks.includes(item.id)
       );
     };
@@ -129,7 +130,7 @@ export const BoardProvider: React.FC = ({ children }) => {
       );
 
     return () => {
-      unsubscribeTasks.forEach((subscribedTask) => {
+      subscribedTasks.forEach((subscribedTask) => {
         subscribedTask.unsubscribe();
       });
       unsubscribeBoard();
@@ -142,13 +143,13 @@ export const BoardProvider: React.FC = ({ children }) => {
     const firstIndex = currentTasksIds.indexOf(firstTaskId);
     const secondIndex = currentTasksIds.indexOf(secondTaskId);
 
-    currentTasksIds[firstIndex] = secondTaskId;
-    currentTasksIds[secondIndex] = firstTaskId;
+    currentTasksIds.splice(firstIndex, 1);
+    currentTasksIds.splice(secondIndex, 0, firstTaskId);
 
     const tasksWithNewOrder = data!.tasks;
     const temp = tasksWithNewOrder[firstIndex];
-    tasksWithNewOrder[firstIndex] = tasksWithNewOrder[secondIndex];
-    tasksWithNewOrder[secondIndex] = temp;
+    tasksWithNewOrder.splice(firstIndex, 1);
+    tasksWithNewOrder.splice(secondIndex, 0, temp);
 
     setData((oldData) => ({ ...oldData!, tasks: tasksWithNewOrder }));
     return firestoreDB

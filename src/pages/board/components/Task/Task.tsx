@@ -1,3 +1,4 @@
+import { Box } from "@material-ui/core";
 import React, { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { CARD_TYPE } from "../../../../consts";
@@ -20,67 +21,60 @@ export const Task: React.FC<Props> = ({
 }) => {
   const { board } = useBoard();
 
+  const topBorder = document.createElement("div");
+  topBorder.className = styles.topBorder;
+  topBorder.id = "topBorder";
+  const bottomBorder = document.createElement("div");
+  bottomBorder.className = styles.bottomBorder;
+  bottomBorder.id = "bottomBorder";
+
   const ref = useRef<HTMLDivElement>(null);
-  const isHovered = useRef<boolean>(false);
+
   const statusColor =
     board!.statuses.find((s) => s.name === item.status.name)?.color || "blue";
 
   const [, drop] = useDrop({
     accept: CARD_TYPE,
-    // hover(draggedItem: DragableTaskType) {
-    //   if (!ref.current) {
-    //     return;
-    //   }
-
-    //   const dragIndex = draggedItem.index;
-    //   const hoverIndex = index;
-
-    //   if (dragIndex === hoverIndex) {
-    //     return;
-    //   }
-
-    //   // const hoveredRect = ref.current.getBoundingClientRect();
-    //   // const hoverMiddleY = (hoveredRect.bottom - hoveredRect.top) / 2;
-    //   // const mousePosition = monitor.getClientOffset();
-    //   // const hoverClientY = mousePosition!.y - hoveredRect.top;
-
-    //   // if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-    //   //   return;
-    //   // }
-
-    //   // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-    //   //   return;
-    //   // }
-    //   isHovered.current = true;
-
-    //   changeOrderOfItems(dragIndex, hoverIndex);
-    //   // draggedItem.index = hoverIndex;
-    // },
-    drop(itemIsBeingDroppedOn: DragableTaskType) {
+    hover(draggedItem: any, monitor: any) {
       if (!ref.current) {
         return;
       }
 
-      const dragIndex = itemIsBeingDroppedOn.index;
+      const dragIndex = draggedItem.index;
       const hoverIndex = index;
 
       if (dragIndex === hoverIndex) {
         return;
       }
 
-      // const hoveredRect = ref.current.getBoundingClientRect();
-      // const hoverMiddleY = (hoveredRect.bottom - hoveredRect.top) / 2;
-      // const mousePosition = monitor.getClientOffset();
-      // const hoverClientY = mousePosition!.y - hoveredRect.top;
+      if (dragIndex > hoverIndex) {
+        ref.current.appendChild(topBorder);
+        return;
+      }
 
-      // if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-      //   return;
-      // }
+      if (dragIndex < hoverIndex) {
+        ref.current.appendChild(bottomBorder);
+        return;
+      }
+    },
+    drop(itemIsBeingDroppedOn: DragableTaskType) {
+      if (!ref.current) {
+        return;
+      }
+      const top = document.querySelector("#topBorder");
+      if (top) {
+        top.parentNode!.removeChild(top);
+      }
+      const bot = document.querySelector("#bottomBorder");
+      if (bot) {
+        bot.parentNode!.removeChild(bot);
+      }
+      const dragIndex = itemIsBeingDroppedOn.index;
+      const hoverIndex = index;
 
-      // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-      //   return;
-      // }
-      isHovered.current = true;
+      if (dragIndex === hoverIndex) {
+        return;
+      }
 
       changeOrderOfItems(dragIndex, hoverIndex);
     },

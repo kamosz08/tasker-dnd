@@ -61,6 +61,7 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
   } = useFormikContext<FormValues>();
 
   const { board } = useBoard();
+
   const { updateTask, removeTask } = useUpdateTask();
   const item = board!.tasks.find((t) => t.id === itemId)!;
 
@@ -75,6 +76,7 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
 
   const boardLabels = board?.labels || [];
   const taskLabels = item?.labels || [];
+
   const labels = boardLabels.filter((l) => taskLabels.includes(l.name));
 
   const boardParticipants = board!.participants || [];
@@ -103,7 +105,7 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
   return (
     <Form>
       <Box display="flex" height="100%">
-        <Box flex={3} paddingRight="16px">
+        <Box flex={3} paddingRight="16px" overflow="auto">
           <Box display="flex" marginBottom="16px">
             <LabelsList
               taskId={item.id}
@@ -197,10 +199,8 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
               component={FormikInput}
             />
           ) : (
-            <Box minHeight="114px">
-              <pre>
-                <Typography>{item.description}</Typography>
-              </pre>
+            <Box minHeight="114px" whiteSpace="break-spaces">
+              <Typography>{item.description}</Typography>
             </Box>
           )}
         </Box>
