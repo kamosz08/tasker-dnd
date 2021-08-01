@@ -1,7 +1,5 @@
 import { TaskStatus } from "./types";
 
-export const CARD_TYPE = "CARD";
-
 export const defaultStatuses: TaskStatus[] = [
   {
     name: "To do",

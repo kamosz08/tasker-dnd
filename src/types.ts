@@ -26,10 +26,6 @@ export type TaskStatus = {
   color: string;
 };
 
-export type DragableTaskType = TaskType & {
-  index: number;
-};
-
 export type DataStatus = "idle" | "loading" | "success" | "error";
 
 export type BoardType = {

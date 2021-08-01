@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Task } from "./components/Task/Task";
-import { DropFunction, Swimlane } from "./components/Swimlane/Swimlane";
+import { Swimlane } from "./components/Swimlane/Swimlane";
 import styles from "./styles.module.css";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { Box, CircularProgress, Typography } from "@material-ui/core";
 import { BoardProvider, useBoard } from "../../contexts/BoardContext";
 import { TaskEditModal } from "./components/TaskEditModal/TaskEditModal";
 import { useUpdateTask } from "./components/TaskEditModal/useUpdateTask";
 import { TaskStatus } from "../../types";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+} from "react-beautiful-dnd";
 
 const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
   openEditModal,
@@ -23,27 +27,43 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
     if (board?.tasks) setItems(board?.tasks);
   }, [JSON.stringify(board?.tasks)]);
 
-  const onDrop: DropFunction = (item, _monitor, taskStatus) => {
-    if (item.status.name === taskStatus.name) return;
-    try {
-      setItems((prevItems) => prevItems.filter((i) => i.id !== item.id));
-      updateTask(item.id, { status: taskStatus });
-    } catch (error) {
-      console.error(error);
-      setItems((prevItems) => [...prevItems, item]);
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
     }
+
+    const { source, destination } = result;
+
+    if (
+      destination.index === source.index &&
+      destination.droppableId === source.droppableId
+    ) {
+      return;
+    }
+
+    if (destination.droppableId === source.droppableId) {
+      changeOrderOfItems(
+        destination.droppableId,
+        source.index,
+        destination.index
+      );
+      return;
+    }
+
+    console.log(result);
   };
 
-  const changeOrderOfItems = (statusName: TaskStatus["name"]) => (
-    dragIndex: number,
-    hoverIndex: number
+  const changeOrderOfItems = (
+    statusName: TaskStatus["name"],
+    sourceIndex: number,
+    destinationIndex: number
   ) => {
     const itemsWithThisStatus = items.filter(
       (i) => i.status.name === statusName
     );
     changeOrderOfTasks(
-      itemsWithThisStatus[dragIndex].id,
-      itemsWithThisStatus[hoverIndex].id
+      itemsWithThisStatus[sourceIndex].id,
+      itemsWithThisStatus[destinationIndex].id
     );
   };
 
@@ -57,8 +77,7 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
   if (status === "error" || !board)
     return <p>There was an error while fetching board</p>;
   return (
-    <DndProvider backend={HTML5Backend}>
-      {/* <h3 className={styles["header"]}>{board.name}</h3> */}
+    <DragDropContext onDragEnd={onDragEnd}>
       <Box marginLeft="auto" marginRight="auto" maxWidth="960px">
         <Box display="flex" marginTop="32px" marginBottom="32px">
           <Typography color="textSecondary">Board name:</Typography>
@@ -76,7 +95,8 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
                   <FiberManualRecordIcon style={{ color: s.color }} />
                   <Typography>{s.name}</Typography>
                 </Box>
-                <Swimlane onDrop={onDrop} status={s}>
+
+                <Swimlane status={s}>
                   {items
                     .filter((i) => i.status.name === s.name)
                     .map((i, idx) => (
@@ -84,7 +104,6 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
                         key={i.id}
                         item={i}
                         index={idx}
-                        changeOrderOfItems={changeOrderOfItems(s.name)}
                         openEditModal={() => openEditModal(i.id)}
                       />
                     ))}
@@ -94,7 +113,7 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
           })}
         </div>
       </Box>
-    </DndProvider>
+    </DragDropContext>
   );
 };
 

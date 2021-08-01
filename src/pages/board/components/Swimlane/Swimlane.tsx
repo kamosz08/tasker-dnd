@@ -1,54 +1,51 @@
 import { Box, Button } from "@material-ui/core";
 import React, { useState } from "react";
-import { DropTargetMonitor, useDrop } from "react-dnd";
-import { CARD_TYPE } from "../../../../consts";
-import { DragableTaskType, TaskStatus } from "../../../../types";
+import { Droppable } from "react-beautiful-dnd";
+import { TaskStatus } from "../../../../types";
 import { TaskAddModal } from "../TaskAddModal/TaskAddModal";
 import styles from "./styles.module.css";
 
-export type DropFunction = (
-  item: DragableTaskType,
-  monitor: DropTargetMonitor<unknown, unknown>,
-  status: TaskStatus
-) => void;
-
 type Props = {
-  onDrop: DropFunction;
   status: TaskStatus;
 };
 
-export const Swimlane: React.FC<Props> = ({ onDrop, children, status }) => {
+export const Swimlane: React.FC<Props> = ({ children, status }) => {
   const [show, setShow] = useState(false);
   const onOpen = () => setShow(true);
   const onClose = () => setShow(false);
 
-  const [{ isOver }, drop] = useDrop({
-    accept: CARD_TYPE,
-    drop: (item: DragableTaskType, monitor) => {
-      onDrop(item, monitor, status);
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
-  });
-
   return (
     <>
-      <div ref={drop} style={{ minHeight: 400, height: "100%", width: 240 }}>
-        <Box
-          className={styles.column}
-          style={{
-            backgroundColor: isOver ? "#8d8faa52" : "",
-            height: "calc(100% - 48px)",
-          }}
-          height="100%"
-        >
-          {children}
-          <Button variant="text" className={styles.button} onClick={onOpen}>
-            + Add item
-          </Button>
-        </Box>
-      </div>
+      <Droppable droppableId={status.name}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            style={{ minHeight: 400, height: "100%", width: 240 }}
+          >
+            <Box
+              className={styles.column}
+              style={{
+                backgroundColor: snapshot.isDraggingOver ? "#8d8faa52" : "",
+                height: "calc(100% - 48px)",
+              }}
+              height="100%"
+            >
+              {children}
+              {!snapshot.isDraggingOver && (
+                <Button
+                  variant="text"
+                  className={styles.button}
+                  onClick={onOpen}
+                >
+                  + Add item
+                </Button>
+              )}
+            </Box>
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
       <TaskAddModal onClose={onClose} show={show} taskStatus={status} />
     </>
   );
