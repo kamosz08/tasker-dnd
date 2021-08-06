@@ -1,31 +1,85 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Task } from "./components/Task/Task";
 import { Swimlane } from "./components/Swimlane/Swimlane";
 import styles from "./styles.module.css";
 import { Box, CircularProgress, Typography } from "@material-ui/core";
 import { BoardProvider, useBoard } from "../../contexts/BoardContext";
 import { TaskEditModal } from "./components/TaskEditModal/TaskEditModal";
-import { useUpdateTask } from "./components/TaskEditModal/useUpdateTask";
 import { TaskStatus } from "../../types";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
-} from "react-beautiful-dnd";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 
 const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
   openEditModal,
 }) => {
-  const { board, status, changeOrderOfTasks } = useBoard();
-  const { updateTask } = useUpdateTask();
+  const {
+    board,
+    status,
+    changeOrderOfTasks,
+    changeStatusOfTask,
+    changeOrderAndStatusOfTask,
+  } = useBoard();
   const statuses = board?.statuses || [];
-  const [items, setItems] = useState(board?.tasks || []);
 
-  useEffect(() => {
-    if (board?.tasks) setItems(board?.tasks);
-  }, [JSON.stringify(board?.tasks)]);
+  const changeOrderOfItems = (
+    statusName: TaskStatus["name"],
+    sourceIndex: number,
+    destinationIndex: number
+  ) => {
+    const itemsWithThisStatus = (board?.tasks || []).filter(
+      (i) => i.status.name === statusName
+    );
+
+    changeOrderOfTasks(
+      itemsWithThisStatus[sourceIndex].id,
+      itemsWithThisStatus[destinationIndex].id
+    );
+  };
+
+  const changeOrderAndStatusOfItem = (
+    initialStatusName: TaskStatus["name"],
+    destinationStatusName: TaskStatus["name"],
+    sourceIndex: number,
+    destinationIndex: number
+  ) => {
+    const itemsWithInitialStatus = (board?.tasks || []).filter(
+      (i) => i.status.name === initialStatusName
+    );
+    const itemsWithDestinationStatus = (board?.tasks || []).filter(
+      (i) => i.status.name === destinationStatusName
+    );
+    const destinationStatus = statuses.find(
+      (s) => s.name === destinationStatusName
+    )!;
+
+    if (
+      !itemsWithDestinationStatus[destinationIndex]?.id &&
+      destinationIndex === 0
+    ) {
+      changeStatusOfTask(
+        destinationStatus,
+        itemsWithInitialStatus[sourceIndex].id
+      );
+      return;
+    }
+    if (
+      !itemsWithDestinationStatus[destinationIndex]?.id &&
+      destinationIndex > 0
+    ) {
+      changeOrderAndStatusOfTask(
+        destinationStatus,
+        itemsWithInitialStatus[sourceIndex].id,
+        itemsWithDestinationStatus[destinationIndex - 1].id,
+        true
+      );
+      return;
+    }
+    changeOrderAndStatusOfTask(
+      destinationStatus,
+      itemsWithInitialStatus[sourceIndex].id,
+      itemsWithDestinationStatus[destinationIndex].id
+    );
+  };
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) {
@@ -50,20 +104,11 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
       return;
     }
 
-    console.log(result);
-  };
-
-  const changeOrderOfItems = (
-    statusName: TaskStatus["name"],
-    sourceIndex: number,
-    destinationIndex: number
-  ) => {
-    const itemsWithThisStatus = items.filter(
-      (i) => i.status.name === statusName
-    );
-    changeOrderOfTasks(
-      itemsWithThisStatus[sourceIndex].id,
-      itemsWithThisStatus[destinationIndex].id
+    changeOrderAndStatusOfItem(
+      source.droppableId,
+      destination.droppableId,
+      source.index,
+      destination.index
     );
   };
 
@@ -97,7 +142,7 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
                 </Box>
 
                 <Swimlane status={s}>
-                  {items
+                  {board?.tasks
                     .filter((i) => i.status.name === s.name)
                     .map((i, idx) => (
                       <Task

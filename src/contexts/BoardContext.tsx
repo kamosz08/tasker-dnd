@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { firestoreDB } from "../firebase";
-import { BoardType, DataStatus, TaskType } from "../types";
+import { BoardType, DataStatus, TaskStatus, TaskType } from "../types";
 import { useParams } from "react-router";
 
 type Context = {
@@ -10,6 +10,13 @@ type Context = {
     firstTaskId: string,
     secondTaskId: string
   ) => Promise<void>;
+  changeOrderAndStatusOfTask: (
+    destinationStatus: TaskStatus,
+    firstTaskId: string,
+    secondTaskId: string,
+    destinationIsLastOfType?: boolean
+  ) => Promise<void>;
+  changeStatusOfTask: (newStatus: TaskStatus, taskId: string) => Promise<void>;
 };
 
 type BoardSnapshotData = Omit<BoardType, "id" | "tasks"> & { tasks: string[] };
@@ -158,10 +165,74 @@ export const BoardProvider: React.FC = ({ children }) => {
       .update({ tasks: currentTasksIds });
   };
 
+  const changeStatusOfTask = (newStatus: TaskStatus, taskId: string) => {
+    const currentTasksIds = data!.tasks.map((t) => t.id);
+
+    const taskIndex = currentTasksIds.indexOf(taskId);
+
+    const updatedTasks = [...data!.tasks].map((t, idx) =>
+      idx === taskIndex ? { ...t, status: newStatus } : t
+    );
+
+    setData((oldData) => ({ ...oldData!, tasks: updatedTasks }));
+
+    return firestoreDB
+      .collection("tasks")
+      .doc(taskId)
+      .update({ status: newStatus });
+  };
+
+  const changeOrderAndStatusOfTask = (
+    destinationStatus: TaskStatus,
+    firstTaskId: string,
+    secondTaskId: string,
+    destinationIsLastOfType = false
+  ) => {
+    const currentTasksIds = data!.tasks.map((t) => t.id);
+
+    const firstIndex = currentTasksIds.indexOf(firstTaskId);
+    const secondIndex = currentTasksIds.indexOf(secondTaskId);
+
+    let destinationIndex = secondIndex - 1 >= 0 ? secondIndex - 1 : 0;
+    if (destinationIsLastOfType) destinationIndex = secondIndex;
+    else if (firstIndex > secondIndex) destinationIndex = secondIndex;
+
+    currentTasksIds.splice(firstIndex, 1);
+    currentTasksIds.splice(destinationIndex, 0, firstTaskId);
+
+    let tasksWithNewOrder = [...data!.tasks];
+    const temp = tasksWithNewOrder[firstIndex];
+    tasksWithNewOrder.splice(firstIndex, 1);
+    tasksWithNewOrder.splice(destinationIndex, 0, temp);
+    tasksWithNewOrder = tasksWithNewOrder.map((t) =>
+      t.id === temp.id ? { ...t, status: destinationStatus } : t
+    );
+
+    setData((oldData) => ({ ...oldData!, tasks: tasksWithNewOrder }));
+
+    const updateTaskBatch = firestoreDB.batch();
+
+    const updatedValues: Partial<TaskType> = {
+      status: destinationStatus,
+    };
+
+    const taskRef = firestoreDB.collection("tasks").doc(firstTaskId);
+    updateTaskBatch.update(taskRef, updatedValues);
+
+    const boardRef = firestoreDB.collection("boards").doc(boardId);
+    updateTaskBatch.update(boardRef, {
+      tasks: currentTasksIds,
+    });
+
+    return updateTaskBatch.commit();
+  };
+
   const contextValue = {
     board: data,
     status,
     changeOrderOfTasks,
+    changeStatusOfTask,
+    changeOrderAndStatusOfTask,
   };
 
   return (
