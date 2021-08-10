@@ -5,11 +5,13 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { BrowserRouter, Switch } from "react-router-dom";
 import { Login } from "./pages/login/Login";
 import { Navbar } from "./shared/Navbar/Navbar";
+import { Footer } from "./shared/Footer/Footer";
 import { AuthenticatedRoute } from "./shared/AuthenticatedRoute/AuthenticatedRoute";
 import { ResetPassword } from "./pages/reset-password/ResetPassword";
 import { Main } from "./pages/main/Main";
 import { NotAuthenticatedRoute } from "./shared/NotAuthenticatedRoute/NotAuthenticatedRoute";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import packageJson from "../package.json";
 
 const theme = createMuiTheme({
   palette: {
@@ -33,6 +35,7 @@ const Routes: React.FC = () => {
         <AuthenticatedRoute path="/boards/:id" component={Board} />
         <AuthenticatedRoute exact path="/" component={Main} />
       </Switch>
+      <Footer version={packageJson.version} />
     </BrowserRouter>
   );
 };
