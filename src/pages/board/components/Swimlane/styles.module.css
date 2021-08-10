@@ -1,12 +1,12 @@
 .column {
   min-height: 400px;
 }
-.column:hover .button {
+/* .column:hover .button {
   display: block !important;
-}
+} */
 
 .button {
-  display: none !important;
+  display: block !important;
   font-size: 12px !important;
   margin-left: 8px !important;
   margin-top: 8px !important;
