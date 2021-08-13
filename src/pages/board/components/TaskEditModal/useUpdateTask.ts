@@ -1,8 +1,8 @@
 import { firestoreDB } from "../../../../firebase";
-import { TaskType } from "../../../../types";
+import { TaskSnapshot, TaskType } from "../../../../types";
 import firebase from "firebase/app";
 import { useAuth } from "../../../../contexts/AuthContext";
-import { useBoard } from "../../../../contexts/BoardContext";
+import { useParams } from "react-router";
 
 type FormValues = Partial<
   Pick<TaskType, "description" | "title" | "status" | "assignee">
@@ -10,12 +10,12 @@ type FormValues = Partial<
 
 export const useUpdateTask = () => {
   const { user } = useAuth();
-  const { board } = useBoard();
+  const { id: boardId } = useParams<{ id: string }>();
 
   const updateTask = (taskId: string, values: FormValues) => {
     const updateTaskBatch = firestoreDB.batch();
 
-    const updatedValues: Partial<TaskType> = {
+    const updatedValues: Partial<TaskSnapshot> = {
       ...values,
       updatedBy: { userId: user!.id, displayName: user!.displayName },
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
@@ -24,7 +24,7 @@ export const useUpdateTask = () => {
     const taskRef = firestoreDB.collection("tasks").doc(taskId);
     updateTaskBatch.update(taskRef, updatedValues);
 
-    const boardRef = firestoreDB.collection("boards").doc(board!.id);
+    const boardRef = firestoreDB.collection("boards").doc(boardId);
     updateTaskBatch.update(boardRef, {
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
     });
@@ -35,7 +35,7 @@ export const useUpdateTask = () => {
   const removeTask = async (taskId: string) => {
     await firestoreDB
       .collection("boards")
-      .doc(board!.id)
+      .doc(boardId)
       .update({
         lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
         tasks: firebase.firestore.FieldValue.arrayRemove(taskId),
@@ -44,7 +44,7 @@ export const useUpdateTask = () => {
   };
 
   const addLabelToTask = async (taskId: string, label: string) => {
-    const updatedValues: Partial<TaskType> = {
+    const updatedValues: Partial<TaskSnapshot> = {
       labels: firebase.firestore.FieldValue.arrayUnion(label) as any,
       updatedBy: { userId: user!.id, displayName: user!.displayName },
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
@@ -57,7 +57,7 @@ export const useUpdateTask = () => {
       .then(() =>
         firestoreDB
           .collection("boards")
-          .doc(board!.id)
+          .doc(boardId)
           .update({
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
           })
@@ -65,7 +65,7 @@ export const useUpdateTask = () => {
   };
 
   const removeLabelFromTask = async (taskId: string, label: string) => {
-    const updatedValues: Partial<TaskType> = {
+    const updatedValues: Partial<TaskSnapshot> = {
       labels: firebase.firestore.FieldValue.arrayRemove(label) as any,
       updatedBy: { userId: user!.id, displayName: user!.displayName },
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
@@ -78,7 +78,7 @@ export const useUpdateTask = () => {
       .then(() =>
         firestoreDB
           .collection("boards")
-          .doc(board!.id)
+          .doc(boardId)
           .update({
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
           })

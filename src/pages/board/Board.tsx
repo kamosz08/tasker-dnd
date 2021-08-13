@@ -3,37 +3,59 @@ import { Task } from "./components/Task/Task";
 import { Swimlane } from "./components/Swimlane/Swimlane";
 import styles from "./styles.module.css";
 import { Box, CircularProgress, Typography } from "@material-ui/core";
-import { BoardProvider, useBoard } from "../../contexts/BoardContext";
 import { TaskEditModal } from "./components/TaskEditModal/TaskEditModal";
 import { TaskStatus } from "../../types";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { useBoardDetailsListener } from "./useBoardDetailsListener";
+import {
+  useBoardDetailsActions,
+  useBoardDetailsSlice,
+} from "../../redux/boardDetails/boardDetailsSlice";
+import { useParams } from "react-router";
 
 const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
   openEditModal,
 }) => {
+  useBoardDetailsListener();
+  const { id: boardId } = useParams<{ id: string }>();
+
+  const board = useBoardDetailsSlice(boardId);
   const {
-    board,
-    status,
     changeOrderOfTasks,
     changeStatusOfTask,
     changeOrderAndStatusOfTask,
-  } = useBoard();
-  const statuses = board?.statuses || [];
+  } = useBoardDetailsActions();
+
+  if (!board || board.status === "idle" || board.status === "loading") {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center">
+        <CircularProgress />
+        <Box marginLeft="8px">Loading...</Box>
+      </Box>
+    );
+  }
+  if (board.status === "error") {
+    return <p>There was an error while fetching board</p>;
+  }
+
+  const boardData = board.data;
+  const statuses = boardData.statuses || [];
 
   const changeOrderOfItems = (
     statusName: TaskStatus["name"],
     sourceIndex: number,
     destinationIndex: number
   ) => {
-    const itemsWithThisStatus = (board?.tasks || []).filter(
+    const itemsWithThisStatus = boardData.tasks.filter(
       (i) => i.status.name === statusName
     );
 
-    changeOrderOfTasks(
-      itemsWithThisStatus[sourceIndex].id,
-      itemsWithThisStatus[destinationIndex].id
-    );
+    changeOrderOfTasks({
+      boardId,
+      firstTaskId: itemsWithThisStatus[sourceIndex].id,
+      secondTaskId: itemsWithThisStatus[destinationIndex].id,
+    });
   };
 
   const changeOrderAndStatusOfItem = (
@@ -42,10 +64,10 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
     sourceIndex: number,
     destinationIndex: number
   ) => {
-    const itemsWithInitialStatus = (board?.tasks || []).filter(
+    const itemsWithInitialStatus = (boardData.tasks || []).filter(
       (i) => i.status.name === initialStatusName
     );
-    const itemsWithDestinationStatus = (board?.tasks || []).filter(
+    const itemsWithDestinationStatus = (boardData.tasks || []).filter(
       (i) => i.status.name === destinationStatusName
     );
     const destinationStatus = statuses.find(
@@ -56,29 +78,32 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
       !itemsWithDestinationStatus[destinationIndex]?.id &&
       destinationIndex === 0
     ) {
-      changeStatusOfTask(
-        destinationStatus,
-        itemsWithInitialStatus[sourceIndex].id
-      );
+      changeStatusOfTask({
+        boardId,
+        taskId: itemsWithInitialStatus[sourceIndex].id,
+        newStatus: destinationStatus,
+      });
       return;
     }
     if (
       !itemsWithDestinationStatus[destinationIndex]?.id &&
       destinationIndex > 0
     ) {
-      changeOrderAndStatusOfTask(
-        destinationStatus,
-        itemsWithInitialStatus[sourceIndex].id,
-        itemsWithDestinationStatus[destinationIndex - 1].id,
-        true
-      );
+      changeOrderAndStatusOfTask({
+        boardId,
+        destinationStatus: destinationStatus,
+        firstTaskId: itemsWithInitialStatus[sourceIndex].id,
+        secondTaskId: itemsWithDestinationStatus[destinationIndex - 1].id,
+        destinationIsLastOfType: true,
+      });
       return;
     }
-    changeOrderAndStatusOfTask(
-      destinationStatus,
-      itemsWithInitialStatus[sourceIndex].id,
-      itemsWithDestinationStatus[destinationIndex].id
-    );
+    changeOrderAndStatusOfTask({
+      boardId,
+      destinationStatus: destinationStatus,
+      firstTaskId: itemsWithInitialStatus[sourceIndex].id,
+      secondTaskId: itemsWithDestinationStatus[destinationIndex].id,
+    });
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -112,21 +137,14 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
     );
   };
 
-  if (status === "idle" || status === "loading")
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center">
-        <CircularProgress />
-        <Box marginLeft="8px">Loading...</Box>
-      </Box>
-    );
-  if (status === "error" || !board)
-    return <p>There was an error while fetching board</p>;
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Box marginLeft="auto" marginRight="auto" maxWidth="960px">
         <Box display="flex" marginTop="32px" marginBottom="32px">
-          <Typography color="textSecondary">Board name:</Typography>
-          <Typography>{board.name}</Typography>
+          <Box marginRight="8px">
+            <Typography color="textSecondary">Board name:</Typography>
+          </Box>
+          <Typography>{boardData.name}</Typography>
         </Box>
         <div className={styles["main-wrapper"]}>
           {statuses.map((s) => {
@@ -142,7 +160,7 @@ const BoardComponent: React.FC<{ openEditModal: (taskId: string) => void }> = ({
                 </Box>
 
                 <Swimlane status={s}>
-                  {board?.tasks
+                  {boardData.tasks
                     .filter((i) => i.status.name === s.name)
                     .map((i, idx) => (
                       <Task
@@ -166,7 +184,7 @@ export const Board: React.FC = () => {
   const [editedTaskId, setEditedTaskId] = useState<string | null>(null);
 
   return (
-    <BoardProvider>
+    <>
       <BoardComponent
         openEditModal={(taskId: string) => setEditedTaskId(taskId)}
       />
@@ -177,6 +195,6 @@ export const Board: React.FC = () => {
           show={!!editedTaskId}
         />
       )}
-    </BoardProvider>
+    </>
   );
 };

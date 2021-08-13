@@ -21,7 +21,8 @@ import { formatDistance, compareAsc } from "date-fns";
 import { Notification } from "../../../../shared/Notification/Notification";
 import { useUpdateTask } from "./useUpdateTask";
 import { LabelsList } from "./LabelsList";
-import { useBoard } from "../../../../contexts/BoardContext";
+import { useParams } from "react-router-dom";
+import { useBoardDetailsSlice } from "../../../../redux/boardDetails/boardDetailsSlice";
 
 type Props = {
   show: boolean;
@@ -60,10 +61,12 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
     handleSubmit,
   } = useFormikContext<FormValues>();
 
-  const { board } = useBoard();
+  const { id: boardId } = useParams<{ id: string }>();
+  const board = useBoardDetailsSlice(boardId);
+  const boardData = board!.data!;
 
   const { updateTask, removeTask } = useUpdateTask();
-  const item = board!.tasks.find((t) => t.id === itemId)!;
+  const item = boardData.tasks.find((t) => t.id === itemId)!;
 
   const { removeLabelFromTask } = useUpdateTask();
   const [isEditMode, setEditMode] = useState(false);
@@ -72,17 +75,17 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
 
   const hasBeenUpdated =
     item.lastUpdated &&
-    compareAsc(item.createdAt.toDate(), item.lastUpdated.toDate()) !== 0;
+    compareAsc(new Date(item.createdAt), new Date(item.lastUpdated)) !== 0;
 
-  const boardLabels = board?.labels || [];
+  const boardLabels = boardData.labels || [];
   const taskLabels = item?.labels || [];
 
   const labels = boardLabels.filter((l) => taskLabels.includes(l.name));
 
-  const boardParticipants = board!.participants || [];
+  const boardParticipants = boardData.participants || [];
   const assignee = item.assignee;
 
-  const boardStatuses = board!.statuses;
+  const boardStatuses = boardData.statuses;
 
   const handleDeleteLabel = (label: string) => {
     removeLabelFromTask(item.id, label);
@@ -167,7 +170,7 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
               <span className={styles["name"]}>
                 {item.createdBy.displayName}
               </span>{" "}
-              {formatDistance(item.createdAt.toDate(), Date.now(), {
+              {formatDistance(new Date(item.createdAt), Date.now(), {
                 addSuffix: true,
               })}
             </span>
@@ -177,7 +180,7 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
                 <span className={styles["name"]}>
                   {item.updatedBy.displayName}
                 </span>{" "}
-                {formatDistance(item.lastUpdated.toDate(), Date.now(), {
+                {formatDistance(new Date(item.lastUpdated), Date.now(), {
                   addSuffix: true,
                 })}
               </span>
@@ -294,8 +297,10 @@ const EditCardForm: React.FC<EditFormProps> = ({ itemId, onClose }) => {
 export const TaskEditModal: React.FC<Props> = ({ show, onClose, itemId }) => {
   const [error, setError] = useState("");
   const { updateTask } = useUpdateTask();
-  const { board } = useBoard();
-  const item = board!.tasks.find((t) => t.id === itemId)!;
+  const { id: boardId } = useParams<{ id: string }>();
+  const board = useBoardDetailsSlice(boardId);
+  const boardData = board!.data!;
+  const item = boardData.tasks.find((t) => t.id === itemId)!;
 
   const validate = (values: FormValues) => {
     const errors: Errors = {};

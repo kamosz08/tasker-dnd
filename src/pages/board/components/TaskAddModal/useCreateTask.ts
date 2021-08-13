@@ -1,8 +1,8 @@
 import { firestoreDB } from "../../../../firebase";
-import { TaskType } from "../../../../types";
+import { TaskSnapshot, TaskType } from "../../../../types";
 import firebase from "firebase/app";
 import { useAuth } from "../../../../contexts/AuthContext";
-import { useBoard } from "../../../../contexts/BoardContext";
+import { useParams } from "react-router";
 
 type FormValues = Pick<
   TaskType,
@@ -11,12 +11,12 @@ type FormValues = Pick<
 
 export const useCreateTask = () => {
   const { user } = useAuth();
-  const { board } = useBoard();
+  const { id: boardId } = useParams<{ id: string }>();
 
   const createTask = async (values: FormValues) => {
     const newTaskRef = firestoreDB.collection("tasks").doc();
 
-    const newTask: TaskType = {
+    const newTask: TaskSnapshot = {
       id: newTaskRef.id,
       title: values.title,
       description: values.description,
@@ -32,7 +32,7 @@ export const useCreateTask = () => {
     await newTaskRef.set(newTask).then(() =>
       firestoreDB
         .collection("boards")
-        .doc(board!.id)
+        .doc(boardId)
         .update({
           tasks: firebase.firestore.FieldValue.arrayUnion(newTask.id),
           lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,

@@ -1,7 +1,7 @@
 import firebase from "firebase/app";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { firestoreDB } from "../../../../firebase";
-import { BoardType, TaskStatus } from "../../../../types";
+import { BoardSnapshot, TaskStatus } from "../../../../types";
 
 type FormValues = {
   name: string;
@@ -14,7 +14,7 @@ export const useCreateBoard = () => {
 
   const createBoard = async (values: FormValues) => {
     const newBoardRef = firestoreDB.collection("boards").doc();
-    const newBoard: BoardType = {
+    const newBoard: BoardSnapshot = {
       id: newBoardRef.id,
       tasks: [],
       statuses: values.statuses,

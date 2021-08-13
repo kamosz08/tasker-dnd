@@ -1,9 +1,10 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
-import { useBoard } from "../../../../contexts/BoardContext";
 import { TaskType } from "../../../../types";
 import styles from "./styles.module.css";
 import styled from "@emotion/styled";
+import { useBoardDetailsSlice } from "../../../../redux/boardDetails/boardDetailsSlice";
+import { useParams } from "react-router";
 
 type Props = {
   item: TaskType;
@@ -16,10 +17,15 @@ const StyledTask = styled.div<{ leftBorderColor: string }>((props) => ({
 }));
 
 export const Task: React.FC<Props> = ({ item, index, openEditModal }) => {
-  const { board } = useBoard();
+  const { id: boardId } = useParams<{ id: string }>();
+
+  const board = useBoardDetailsSlice(boardId);
+
+  if (!board || !board.data) return null;
 
   const statusColor =
-    board!.statuses.find((s) => s.name === item.status.name)?.color || "blue";
+    board.data.statuses.find((s) => s.name === item.status.name)?.color ||
+    "blue";
 
   return (
     <Draggable key={item.id} draggableId={item.id} index={index}>

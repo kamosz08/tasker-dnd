@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Box, Button, CircularProgress, Typography } from "@material-ui/core";
-import { useUserBoards } from "../../useUserBoards";
 import Alert from "@material-ui/lab/Alert";
 import { BoardCard } from "../BoardCard/BoardCard";
 import AddIcon from "@material-ui/icons/Add";
 import { NewBoard } from "../NewBoard/NewBoard";
+import { useUserBoardsSlice } from "../../../../redux/userBoards/userBoardsSlice";
 
 export const Boards: React.FC = () => {
-  const { status, data, deleteBoard } = useUserBoards();
   const [showModal, setShowModal] = useState(false);
+  const userBoardsSlice = useUserBoardsSlice();
 
   const showAddBoardModal = () => {
     setShowModal(true);
@@ -18,14 +18,14 @@ export const Boards: React.FC = () => {
     setShowModal(false);
   };
 
-  if (status === "idle" || status === "loading")
+  if (userBoardsSlice.status === "idle" || userBoardsSlice.status === "loading")
     return (
       <Box display="flex" justifyContent="center" alignItems="center">
         <CircularProgress />
         <Box marginLeft="8px">Loading existing boards...</Box>
       </Box>
     );
-  if (status === "error")
+  if (userBoardsSlice.status === "error")
     return <p>There was an error while fetching boards</p>;
   return (
     <>
@@ -44,18 +44,14 @@ export const Boards: React.FC = () => {
             Add board
           </Button>
         </Box>
-        {data.length === 0 ? (
+        {userBoardsSlice.data.length === 0 ? (
           <Box display="flex" justifyContent="center" alignItems="center">
             <Alert severity="info">You don&apos;t have any boards yet</Alert>
           </Box>
         ) : (
           <Box display="flex" justifyContent="space-between" flexWrap="wrap">
-            {data.map((board) => (
-              <BoardCard
-                key={board.id}
-                board={board}
-                deleteBoard={deleteBoard}
-              />
+            {userBoardsSlice.data.map((board) => (
+              <BoardCard key={board.id} board={board} />
             ))}
           </Box>
         )}

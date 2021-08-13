@@ -1,21 +1,20 @@
 import React from "react";
 import { useHistory } from "react-router";
 import { Box, Button, Card, Chip, Typography } from "@material-ui/core";
-import { BoardTypeWithoutTaskPull } from "../../useUserBoards";
 import styles from "./styles.module.css";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { formatDistance } from "date-fns";
+import {
+  UserBoard,
+  useUserBoardsActions,
+} from "../../../../redux/userBoards/userBoardsSlice";
 
 export const BoardCard: React.FC<{
-  board: BoardTypeWithoutTaskPull;
-  deleteBoard: (
-    boardId: string,
-    participantsIds: string[],
-    tasksIds: string[]
-  ) => Promise<void>;
-}> = ({ board, deleteBoard }) => {
+  board: UserBoard;
+}> = ({ board }) => {
   const { push } = useHistory();
   const { user } = useAuth();
+  const { deleteBoard } = useUserBoardsActions();
 
   const goToBoard = (id: string) => () => {
     push(`/boards/${id}`);
@@ -41,7 +40,7 @@ export const BoardCard: React.FC<{
           {board.createdAt && (
             <Typography color="textSecondary" variant="body2" align="right">
               Created:{" "}
-              {formatDistance(board.createdAt.toDate(), Date.now(), {
+              {formatDistance(new Date(board.createdAt), Date.now(), {
                 addSuffix: true,
               })}
             </Typography>
@@ -49,7 +48,7 @@ export const BoardCard: React.FC<{
           {board.lastUpdated && (
             <Typography color="textSecondary" variant="body2" align="right">
               Last updated:{" "}
-              {formatDistance(board.lastUpdated.toDate(), Date.now(), {
+              {formatDistance(new Date(board.lastUpdated), Date.now(), {
                 addSuffix: true,
               })}
             </Typography>
@@ -68,11 +67,11 @@ export const BoardCard: React.FC<{
           <Button
             color="secondary"
             onClick={() =>
-              deleteBoard(
-                board.id,
-                board.participants.map((p) => p.userId),
-                board.tasks
-              )
+              deleteBoard({
+                boardId: board.id,
+                participantsIds: board.participants.map((p) => p.userId),
+                tasksIds: board.tasks,
+              })
             }
           >
             Delete

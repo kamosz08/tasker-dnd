@@ -12,6 +12,9 @@ import { Main } from "./pages/main/Main";
 import { NotAuthenticatedRoute } from "./shared/NotAuthenticatedRoute/NotAuthenticatedRoute";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import packageJson from "../package.json";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import { useUserBoardsListener } from "./pages/main/useUserBoardsListener";
 
 const theme = createMuiTheme({
   palette: {
@@ -20,6 +23,17 @@ const theme = createMuiTheme({
     },
   },
 });
+
+const AuthenticatedRoutes = () => {
+  useUserBoardsListener();
+
+  return (
+    <>
+      <AuthenticatedRoute path="/boards/:id" component={Board} />
+      <AuthenticatedRoute exact path="/" component={Main} />
+    </>
+  );
+};
 
 const Routes: React.FC = () => {
   return (
@@ -32,8 +46,7 @@ const Routes: React.FC = () => {
           path="/reset-password"
           component={ResetPassword}
         />
-        <AuthenticatedRoute path="/boards/:id" component={Board} />
-        <AuthenticatedRoute exact path="/" component={Main} />
+        <AuthenticatedRoutes />
       </Switch>
       <Footer version={packageJson.version} />
     </BrowserRouter>
@@ -42,10 +55,12 @@ const Routes: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <AuthProvider>
-        <Routes />
-      </AuthProvider>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <AuthProvider>
+          <Routes />
+        </AuthProvider>
+      </ThemeProvider>
+    </Provider>
   );
 };

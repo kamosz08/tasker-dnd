@@ -4,6 +4,7 @@ import { Boards } from "./components/Boards/Boards";
 
 export const Main: React.FC = () => {
   const hasNotification = false;
+
   return (
     <Box width="100%" display="flex" justifyContent="center">
       <Box display="flex" flexWrap="wrap" width={960} padding="8px 32px">

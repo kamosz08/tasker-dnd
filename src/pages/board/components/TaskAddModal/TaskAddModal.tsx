@@ -2,12 +2,13 @@ import { Box, Button, MenuItem, Select } from "@material-ui/core";
 import React, { useState } from "react";
 import Modal from "react-modal";
 import styles from "./styles.module.css";
-import { Field, Form, Formik, useFormikContext } from "formik";
+import { Field, Form, Formik, FormikHelpers, useFormikContext } from "formik";
 import { FormikInput } from "../../../../shared/FormikInput/FormikInput";
 import { Notification } from "../../../../shared/Notification/Notification";
 import { useCreateTask } from "./useCreateTask";
 import { SimpleUserType, TaskStatus } from "../../../../types";
-import { useBoard } from "../../../../contexts/BoardContext";
+import { useParams } from "react-router";
+import { useBoardDetailsSlice } from "../../../../redux/boardDetails/boardDetailsSlice";
 
 type Props = {
   show: boolean;
@@ -46,10 +47,12 @@ const AddTaskForm: React.FC = () => {
     setFieldValue,
     values,
   } = useFormikContext<FormValues>();
-  const { board } = useBoard();
+  const { id: boardId } = useParams<{ id: string }>();
+  const board = useBoardDetailsSlice(boardId);
+  const boardData = board!.data!;
 
-  const boardStatuses = board!.statuses;
-  const boardParticipants = board!.participants || [];
+  const boardStatuses = boardData.statuses;
+  const boardParticipants = boardData.participants || [];
 
   const handleStatusChange = (statusName: string) => {
     const newStatus = boardStatuses.find((s) => s.name === statusName)!;
@@ -164,7 +167,10 @@ export const TaskAddModal: React.FC<Props> = ({
     return errors;
   };
 
-  const onSubmit = async (values: FormValues, { setSubmitting }: any) => {
+  const onSubmit = async (
+    values: FormValues,
+    { setSubmitting }: FormikHelpers<FormValues>
+  ) => {
     try {
       setError("");
       createTask({ ...values });
@@ -179,6 +185,13 @@ export const TaskAddModal: React.FC<Props> = ({
     setSubmitting(false);
   };
 
+  const initialValues: FormValues = {
+    title: "",
+    description: "",
+    status: taskStatus,
+    assignee: null,
+  };
+
   return (
     <>
       <Notification
@@ -188,12 +201,7 @@ export const TaskAddModal: React.FC<Props> = ({
       />
       <Modal isOpen={show} onRequestClose={onClose} style={customStyles}>
         <Formik
-          initialValues={{
-            title: "",
-            description: "",
-            status: taskStatus,
-            assignee: null,
-          }}
+          initialValues={initialValues}
           validate={validate}
           onSubmit={onSubmit}
         >

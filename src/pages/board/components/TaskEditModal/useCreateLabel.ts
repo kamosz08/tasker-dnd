@@ -1,17 +1,17 @@
 import { firestoreDB } from "../../../../firebase";
-import { TaskType } from "../../../../types";
+import { TaskSnapshot } from "../../../../types";
 import firebase from "firebase/app";
 import { useAuth } from "../../../../contexts/AuthContext";
-import { useBoard } from "../../../../contexts/BoardContext";
+import { useParams } from "react-router";
 
 type FormValues = { name: string; color: string };
 
 export const useCreateLabel = () => {
   const { user } = useAuth();
-  const { board } = useBoard();
+  const { id: boardId } = useParams<{ id: string }>();
 
   const createLabel = async (taskId: string, values: FormValues) => {
-    const updatedValues: Partial<TaskType> = {
+    const updatedValues: Partial<TaskSnapshot> = {
       labels: firebase.firestore.FieldValue.arrayUnion(values.name) as any,
       updatedBy: { userId: user!.id, displayName: user!.displayName },
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,
@@ -24,7 +24,7 @@ export const useCreateLabel = () => {
       .then(() =>
         firestoreDB
           .collection("boards")
-          .doc(board!.id)
+          .doc(boardId)
           .update({
             labels: firebase.firestore.FieldValue.arrayUnion(values),
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp() as firebase.firestore.Timestamp,

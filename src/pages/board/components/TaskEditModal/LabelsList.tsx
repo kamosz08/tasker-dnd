@@ -11,8 +11,9 @@ import React, { useState } from "react";
 import LabelIcon from "@material-ui/icons/Label";
 import AddIcon from "@material-ui/icons/Add";
 import { AddLabelDialog } from "./AddLabelDialog";
-import { useBoard } from "../../../../contexts/BoardContext";
 import { useUpdateTask } from "./useUpdateTask";
+import { useBoardDetailsSlice } from "../../../../redux/boardDetails/boardDetailsSlice";
+import { useParams } from "react-router-dom";
 
 type Props = {
   isOpen: boolean;
@@ -27,12 +28,14 @@ export const LabelsList: React.FC<Props> = ({
   anchorEl,
   taskId,
 }) => {
-  const { board } = useBoard();
+  const { id: boardId } = useParams<{ id: string }>();
+  const board = useBoardDetailsSlice(boardId);
+  const boardData = board!.data!;
   const { addLabelToTask } = useUpdateTask();
 
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const boardLabels = board?.labels || [];
-  const taskLabels = board?.tasks.find((t) => t.id === taskId)?.labels || [];
+  const boardLabels = boardData.labels || [];
+  const taskLabels = boardData.tasks.find((t) => t.id === taskId)?.labels || [];
 
   const labels = boardLabels.filter((l) => !taskLabels.includes(l.name));
 

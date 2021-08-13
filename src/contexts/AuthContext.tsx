@@ -32,7 +32,8 @@ export const AuthProvider: React.FC = ({ children }) => {
           .collection("users")
           .doc(user?.uid)
           .get();
-        setCurrentUser(dbUser.data() as UserType);
+        const userData = dbUser.data() as UserType;
+        setCurrentUser(userData);
       } else {
         setCurrentUser(null);
       }
@@ -88,7 +89,7 @@ export const AuthProvider: React.FC = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within a CountProvider");
+    throw new Error("useAuth must be used within a AuthProvider");
   }
   return context;
 };
