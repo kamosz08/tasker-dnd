@@ -10,8 +10,3 @@ I wanted to create an app with real time updates, trello clone was the first thi
 	- React
 	- Material UI with styled components and a bit of css modules
 	- Redux combined with hooks that subscribe to firebase
-
-## Demo
-
-Sorry if hosted app is not working properly, I don't have the time and will to maintain and fix bugs in those small projects :)
-https://tasker-dnd.web.app/
