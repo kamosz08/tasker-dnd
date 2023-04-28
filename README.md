@@ -1,6 +1,6 @@
 # Tasker DnD app
 
-I wanted to create an app with real time updates, trello clone was the first thing that came to my mind. I have never planned to share this app with the world, it lacks a lot of features and wouldn't be competitive. I am actually using it when im working on other projects :)
+Trello clone
 
 # Most important tech details
 
